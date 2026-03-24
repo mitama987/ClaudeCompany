@@ -27,9 +27,11 @@ $ARGUMENTS
 
 ## Trello API認証
 
-```
-API_KEY=REDACTED
-TOKEN=REDACTED
+プロジェクトルートの `.env` ファイルから読み込む：
+
+```bash
+source .env
+# TRELLO_API_KEY, TRELLO_TOKEN が設定される
 ```
 
 ## 実行手順
@@ -86,7 +88,8 @@ Trello MCP の `get_cards_by_list_id` で対象リストの全カードを取得
 Bash の curl コマンドで直接APIを叩く：
 
 ```bash
-curl -s -X PUT "https://api.trello.com/1/cards/{cardId}?pos={計算したpos}&key={API_KEY}&token={TOKEN}"
+source .env
+curl -s -X PUT "https://api.trello.com/1/cards/{cardId}?pos={計算したpos}&key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}"
 ```
 
 ### Step 7: 結果を報告

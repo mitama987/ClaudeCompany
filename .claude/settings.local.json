@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__trello__get_board_labels",
+      "mcp__trello__create_label",
+      "mcp__trello__update_card_details"
+    ]
+  }
+}

@@ -135,9 +135,9 @@ curl -s -X PUT "https://api.trello.com/1/cards/{cardId}?pos={計算したpos}&ke
 Python urllib で Notion REST API を呼び出し、統合TODO DBにもカードを作成:
 
 ```python
-import urllib.request, json
+import urllib.request, json, os
 
-NOTION_TOKEN = "***REMOVED***"
+NOTION_TOKEN = os.environ["NOTION_TOKEN"]
 TODO_DB_ID = "33f0df73-1957-8182-846d-cbf9362688a2"
 
 headers = {

@@ -33,7 +33,7 @@ $ARGUMENTS
 
 ```bash
 # Notion REST API を使う場合
-NOTION_TOKEN="***REMOVED***"
+NOTION_TOKEN="$NOTION_TOKEN"
 ```
 
 ※ MCP経由の場合は `mcp__notionApi__API-post-page` を使用。APIバージョン制約で DB作成は REST API 直接呼び出しが必要な場合あり。
@@ -55,9 +55,9 @@ mcp__trello__set_active_board(boardId: "5ffe5b3fa17b04881f2c4fbc")
 Python urllib で Notion API を呼び出し、統合TODO DBをクエリ:
 
 ```python
-import urllib.request, json
+import urllib.request, json, os
 
-NOTION_TOKEN = "***REMOVED***"
+NOTION_TOKEN = os.environ["NOTION_TOKEN"]
 TODO_DB_ID = "33f0df73-1957-8182-846d-cbf9362688a2"
 
 headers = {

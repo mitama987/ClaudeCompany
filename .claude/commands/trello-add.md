@@ -129,3 +129,51 @@ curl -s -X PUT "https://api.trello.com/1/cards/{cardId}?pos={計算したpos}&ke
 - 同じ締切日のカードが既にある場合は、そのカードの直後に配置
 - リスト名を「該当リスト」と言われた場合は、締切月のリストを指す
 - ユーザーが明示的にリストを指定した場合はそちらを優先
+
+### Step 8: Notionにも同時登録
+
+Python urllib で Notion REST API を呼び出し、統合TODO DBにもカードを作成:
+
+```python
+import urllib.request, json
+
+NOTION_TOKEN = "***REMOVED***"
+TODO_DB_ID = "33f0df73-1957-8182-846d-cbf9362688a2"
+
+headers = {
+    "Authorization": f"Bearer {NOTION_TOKEN}",
+    "Content-Type": "application/json",
+    "Notion-Version": "2022-06-28"
+}
+
+# リスト名→時間枠マッピング
+LIST_TO_TIMEFRAME = {
+    "今日（前半）": "今日",
+    "今日（後半）": "明日",
+    "今週（平日）": "今週",
+}
+# 当月リスト→今月、翌月以降リスト→来月以降
+
+page_data = {
+    "parent": {"database_id": TODO_DB_ID},
+    "properties": {
+        "タスク名": {"title": [{"text": {"content": card_name}}]},
+        "ステータス": {"status": {"name": "未着手"}},
+        "時間枠": {"select": {"name": timeframe}},
+        "TrelloカードID": {"rich_text": [{"text": {"content": trello_card_id}}]},
+        "Trelloリンク": {"url": trello_card_url},
+        "ソース": {"select": {"name": "Trello"}},
+        "期限日": {"date": {"start": due_date}}
+    }
+}
+
+body = json.dumps(page_data).encode("utf-8")
+req = urllib.request.Request("https://api.notion.com/v1/pages", data=body, headers=headers, method="POST")
+with urllib.request.urlopen(req) as resp:
+    result = json.loads(resp.read().decode("utf-8"))
+```
+
+Step 7 の報告に以下を追加:
+```
+- Notion: 統合TODO DBにも登録済み
+```

@@ -1,0 +1,198 @@
+/* Reset */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: #f6f6f6;
+    -webkit-font-smoothing: antialiased;
+}
+
+.note-container {
+    max-width: 620px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 40px 32px 60px;
+    border-radius: 0;
+    min-height: 100vh;
+}
+
+/* Typography */
+.note-container {
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans JP", "Hiragino Kaku Gothic ProN",
+                 "Hiragino Sans", "Yu Gothic Medium", "Yu Gothic", Meiryo, sans-serif;
+    font-size: 16px;
+    line-height: 1.9;
+    color: #333;
+    letter-spacing: 0.02em;
+    word-break: break-word;
+}
+
+/* Author */
+.note-author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.note-author-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ddd;
+}
+.note-author-name {
+    font-size: 14px;
+    color: #555;
+    font-weight: 500;
+}
+
+/* Date */
+.note-date {
+    font-size: 13px;
+    color: #999;
+    margin-bottom: 16px;
+}
+
+/* Title */
+.note-title {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 32px;
+    color: #222;
+}
+
+/* Body headings */
+.note-body h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 48px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e5e5e5;
+    color: #222;
+    line-height: 1.5;
+}
+
+.note-body h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 32px 0 12px;
+    color: #222;
+    line-height: 1.5;
+}
+
+/* Paragraphs */
+.note-body p {
+    margin: 0 0 24px;
+    line-height: 1.9;
+}
+
+/* Blockquote - note.com style */
+.note-body figure {
+    margin: 24px 0;
+}
+.note-body blockquote {
+    border-left: 3px solid #ccc;
+    margin: 0;
+    padding: 12px 0 12px 20px;
+    color: #555;
+    font-size: 15px;
+    line-height: 2.0;
+}
+.note-body blockquote p {
+    margin: 0;
+    color: #555;
+}
+
+/* Lists */
+.note-body ul {
+    padding-left: 24px;
+    margin: 0 0 24px;
+}
+.note-body ol {
+    padding-left: 24px;
+    margin: 0 0 24px;
+}
+.note-body li {
+    margin-bottom: 4px;
+}
+.note-body li p {
+    margin: 0;
+}
+
+/* Links */
+.note-body a {
+    color: #2f80ed;
+    text-decoration: underline;
+}
+.note-body a:hover {
+    opacity: 0.8;
+}
+
+/* Inline code */
+.note-body code {
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 14px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+/* Strong */
+.note-body strong {
+    font-weight: 700;
+}
+
+/* Tags */
+.note-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid #eee;
+}
+.note-tag {
+    background: #f5f5f5;
+    color: #555;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+/* Table */
+.note-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 14px;
+}
+.note-body th,
+.note-body td {
+    border: 1px solid #e5e5e5;
+    padding: 8px 12px;
+    text-align: left;
+}
+.note-body th {
+    background: #f8f8f8;
+    font-weight: 700;
+}
+
+/* Image placeholder */
+.note-image-placeholder {
+    background: #f8f8f8;
+    border: 2px dashed #ddd;
+    padding: 32px;
+    text-align: center;
+    color: #aaa;
+    margin: 16px 0 24px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Empty line spacer */
+.note-body p br:only-child {
+    display: block;
+    content: "";
+    margin-top: 8px;
+}

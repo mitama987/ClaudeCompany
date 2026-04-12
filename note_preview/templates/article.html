@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - note.com Preview</title>
+    <style>{{ css }}</style>
+</head>
+<body>
+    <div class="note-container">
+        <div class="note-header">
+            <div class="note-author">
+                <div class="note-author-icon"></div>
+                <span class="note-author-name">Youパパ</span>
+            </div>
+            <div class="note-date">{{ date }}</div>
+            <h1 class="note-title">{{ title }}</h1>
+        </div>
+        <div class="note-body">
+            {{ body_html | safe }}
+        </div>
+        {% if tags %}
+        <div class="note-tags">
+            {% for tag in tags %}
+            <span class="note-tag">#{{ tag }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

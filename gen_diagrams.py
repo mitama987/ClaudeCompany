@@ -3,7 +3,7 @@ import os, base64, pathlib, sys
 from google import genai
 from google.genai import types
 
-API_KEY = os.environ.get("GEMINI_API_KEY", "REDACTED_GEMINI_API_KEY")
+API_KEY = os.environ["GEMINI_API_KEY"]
 OUTPUT_DIR = pathlib.Path(r"C:\Users\mitam\Desktop\work\50_ブログ\02_note\01_XToolsPro3\01_LP・販売記事\_attachments")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 

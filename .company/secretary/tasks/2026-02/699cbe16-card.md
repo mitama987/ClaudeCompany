@@ -1,0 +1,27 @@
+---
+archived_at: '2026-02-23'
+board: データに基づく原因究明
+card_id: 699cbe16747a7983096f142f
+checklist_done: 0
+checklist_items: 0
+comments_count: 0
+completed: '2026-02-23'
+created: '2026-02-23'
+due: '2026-02-23'
+elapsed_days: 0
+labels:
+- black
+list: 今日（前半）
+members: []
+name: メールチェック → 優先度決め
+status: archived
+url: https://trello.com/c/FMGWMvCg
+---
+
+# メールチェック → 優先度決め
+
+先にメールチェックすると、メールの内容の優先度が上がってしまう
+（帰った後のメールなので優先度はそこまで高くないはず（電話ではないので）
+
+## コメント・移動履歴
+- 2026-02-23 20:52 作成

@@ -1,10 +1,55 @@
 /* Trello Task Dashboard — フロントエンド描画 */
-const PALETTE = [
+
+// Trello標準ラベル色 → CSS hex
+const TRELLO_COLORS = {
+  green: "#61bd4f",
+  green_dark: "#519839",
+  green_light: "#b7ddb0",
+  yellow: "#f2d600",
+  yellow_dark: "#d9b51c",
+  yellow_light: "#f5ea92",
+  orange: "#ff9f1a",
+  orange_dark: "#cf513d",
+  orange_light: "#ffd29c",
+  red: "#eb5a46",
+  red_dark: "#b04632",
+  red_light: "#ef9a9a",
+  purple: "#c377e0",
+  purple_dark: "#89609e",
+  purple_light: "#dfc0eb",
+  blue: "#0079bf",
+  blue_dark: "#055a8c",
+  blue_light: "#8bbdd9",
+  sky: "#00c2e0",
+  sky_dark: "#0098b7",
+  sky_light: "#8fdfeb",
+  lime: "#51e898",
+  lime_dark: "#4bbf6b",
+  lime_light: "#b3f1d0",
+  pink: "#ff78cb",
+  pink_dark: "#ad5a7d",
+  pink_light: "#f9c2e4",
+  black: "#344563",
+  black_dark: "#091e42",
+  black_light: "#8993a4",
+  unlabeled: "#94a3b8",
+};
+
+const FALLBACK_PALETTE = [
   "#38bdf8", "#f472b6", "#fbbf24", "#a78bfa", "#34d399",
   "#f87171", "#60a5fa", "#fb923c", "#c084fc", "#4ade80",
-  "#facc15", "#22d3ee", "#fca5a5", "#818cf8", "#f59e0b",
 ];
-const colorFor = (i) => PALETTE[i % PALETTE.length];
+
+function colorForLabel(name, fallbackIndex) {
+  if (!name) return FALLBACK_PALETTE[fallbackIndex % FALLBACK_PALETTE.length];
+  const key = String(name).toLowerCase();
+  if (TRELLO_COLORS[key]) return TRELLO_COLORS[key];
+  // ラベル名に色名が含まれていれば採用
+  for (const [k, v] of Object.entries(TRELLO_COLORS)) {
+    if (key.includes(k)) return v;
+  }
+  return FALLBACK_PALETTE[fallbackIndex % FALLBACK_PALETTE.length];
+}
 
 let labelChart, monthlyChart, scatterChart;
 
@@ -43,7 +88,7 @@ function renderLabelChart(summary) {
         {
           label: "経過日数 合計",
           data: summary.labels.days,
-          backgroundColor: names.map((_, i) => colorFor(i)),
+          backgroundColor: names.map((n, i) => colorForLabel(n, i)),
         },
         {
           label: "件数",
@@ -71,14 +116,17 @@ function renderMonthlyChart(summary) {
   const ctx = document.getElementById("monthlyChart");
   if (monthlyChart) monthlyChart.destroy();
   const months = summary.monthly.months || [];
-  const datasets = (summary.monthly.series || []).map((s, i) => ({
-    label: s.label,
-    data: s.values,
-    backgroundColor: colorFor(i),
-    borderColor: colorFor(i),
-    tension: 0.2,
-    fill: true,
-  }));
+  const datasets = (summary.monthly.series || []).map((s, i) => {
+    const c = colorForLabel(s.label, i);
+    return {
+      label: s.label,
+      data: s.values,
+      backgroundColor: c,
+      borderColor: c,
+      tension: 0.2,
+      fill: true,
+    };
+  });
   monthlyChart = new Chart(ctx, {
     type: "bar",
     data: { labels: months, datasets },
@@ -118,7 +166,7 @@ function renderScatter(points) {
     datasets.push({
       label,
       data: arr,
-      backgroundColor: colorFor(i++),
+      backgroundColor: colorForLabel(label, i++),
       pointRadius: 4,
       pointHoverRadius: 6,
     });

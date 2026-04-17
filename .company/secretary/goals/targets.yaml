@@ -1,0 +1,20 @@
+currency: JPY
+
+# 月次売上目標. goal_progress.py が読み込み、進捗率を計算する
+milestones:
+  short_term:
+    label: "月10万円"
+    monthly_yen: 100000
+    rationale: ".company/CLAUDE.md の個人目標"
+  year_1:
+    label: "Year 1 MRR"
+    monthly_yen: 298000
+    rationale: "2026-03-26 ロードマップ Phase 1 (B2C 100名 × ¥2,980)"
+  year_3:
+    label: "Year 3 MRR"
+    monthly_yen: 1641000
+    rationale: "専業化判断ポイント"
+  ultimate:
+    label: "年1億 (月833万)"
+    monthly_yen: 8333333
+    rationale: "10年後の売上目標"

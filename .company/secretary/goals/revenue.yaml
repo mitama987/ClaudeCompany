@@ -1,0 +1,27 @@
+# 月次売上実績（手動管理）.
+#
+# データソース:
+#   - 2025年通年 ¥304,000, 2026-Q1 ¥159,000, 2026-03 ¥80,280 → 2026-03-26 ロードマップより
+#   - スプシ(Yパパ)の U列売上額は一部しか記録されていないため、真の月次総額はここに記載
+#
+# 更新ルール:
+#   - 月末にinfotop/Brain/note/ココナラ/スプシを集計して `amount` を記録
+#   - `confirmed: true` なら確定、`false` なら月中の暫定値
+#   - 内訳は `breakdown` に記載（任意）
+
+monthly:
+  "2025-04": { amount: 33000, confirmed: true }
+  "2025-05": { amount: 33000, confirmed: true }
+  "2025-06": { amount: 33000, confirmed: true }
+  "2025-07": { amount: 33000, confirmed: true }
+  "2025-08": { amount: 33000, confirmed: true }
+  "2025-09": { amount: 33000, confirmed: true }
+  "2025-10": { amount: 33000, confirmed: true }
+  "2025-11": { amount: 33000, confirmed: true }
+  "2025-12": { amount: 40000, confirmed: true }  # ロードマップ記載値から推定
+  "2026-01": { amount: 39000, confirmed: true }  # Q1¥159K / 3ヶ月 平均
+  "2026-02": { amount: 40000, confirmed: true }
+  "2026-03": { amount: 80280, confirmed: true, note: "単月最高, m840419依存37%" }
+  "2026-04": { amount: 0, confirmed: false, note: "月中暫定（未集計）" }
+
+# 注: 2025-04〜11 は年通年 ¥304,000 / 9ヶ月 ≒ ¥33,800 で均等割. 実績判明時に更新.

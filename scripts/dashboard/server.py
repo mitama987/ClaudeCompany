@@ -14,6 +14,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from .goal_progress import build_goal_progress
 from .insights import build_insights
 from .loader import REPO_ROOT, load_all
 from .summary import build_scatter, build_summary
@@ -51,6 +52,11 @@ def api_scatter() -> JSONResponse:
 def api_insights() -> JSONResponse:
     cards = load_all()
     return JSONResponse(build_insights(cards))
+
+
+@app.get("/api/goal-progress")
+def api_goal_progress(refresh: int = 0) -> JSONResponse:
+    return JSONResponse(build_goal_progress(force_sheet_refresh=bool(refresh)))
 
 
 @app.post("/api/refresh")

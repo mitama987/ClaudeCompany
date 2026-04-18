@@ -127,6 +127,54 @@ source: "元ファイルパス"
 - 適用したフォーマットのサマリー
 - 手動対応が必要な項目（画像挿入、テーブル等）
 
+## 既存記事の部分編集
+
+新規投稿（Step 1〜8）とは異なり、**既に公開/下書きされている記事に対して部分的な書式変更を加える**場合の基本方針。引用ブロック化・UL変換・新規セクション挿入などを既存コンテンツに追加する際に使用する。
+
+### 基本原則3つ
+
+**①引用ボタンはトグル動作**
+- note.comの「引用」ボタンは同じ要素に2回クリックすると**引用解除**になる
+- バッチ処理で失敗と思って再試行すると、実は成功していた箇所を元に戻してしまう事故が頻発する
+- **対策**: 処理前に `target.closest('blockquote')` で既引用チェック、既引用ならスキップ
+
+**②1操作 = 1 javascript_exec**
+- 1つのJS実行内で `for` ループを使って複数要素を連続処理するとProseMirror状態が壊れる
+- 中盤から浮動ツールバーが出現しなくなり失敗が連鎖する
+- **対策**: 各要素の処理を個別の `javascript_exec` 呼び出しに分割する
+
+**③処理前後の必須検証**
+- 各操作の前後で「期待通りの状態か」をJSで確認
+- 失敗時のリトライは **状態を再読み込み** してから（キャッシュされた要素参照は無効になっている可能性）
+
+### 既編集チェックヘルパー（必須）
+
+各処理フェーズの前後で現在の状態を一覧確認：
+
+```javascript
+(() => {
+  const tests = [
+    ['プレフィックス1', 'Q1A'],
+    ['プレフィックス2', 'Q2'],
+    // ... 以下対象箇所を列挙
+  ];
+  const res = [];
+  for (const [prefix, label] of tests) {
+    const match = Array.from(document.querySelectorAll('.ProseMirror p'))
+      .find(x => x.textContent.startsWith(prefix));
+    res.push(`${label}:${match?.closest('blockquote') ? '✓' : '✗'}`);
+  }
+  return res.join(' ');
+})();
+```
+
+### 部分編集フロー
+
+1. **事前スナップショット**: 編集前の対象セクションをJSで列挙・記録
+2. **1操作ずつ処理**: パターン12〜15を1要素ずつ適用
+3. **各操作後の検証**: `closest('blockquote')` 等で結果を確認
+4. **最後にまとめて一時保存**: パターン6で保存（途中保存でもエディタ状態は維持される）
+
 ## note.com エディタ技術情報
 
 ### ProseMirror ベースのエディタ
@@ -541,6 +589,203 @@ JSで冒頭の疑問文段落群を特定し、テキスト内容を取得。
 })();
 ```
 
+### パターン12: 連続引用化の正しいイベント順序【既存記事編集】
+
+パターン2の「JS Selection API + ツールバー方式」を既存記事の複数段落に連続適用する場合、**selectionchange イベント発火** と **アクティベーション前処理** が必須。これらが抜けると浮動ツールバーが出現せず失敗する。
+
+#### 正しい手順（1段落ずつ実行）
+
+```javascript
+(async () => {
+  const prefix = 'A: プレフィックス';
+  const ps = document.querySelectorAll('.ProseMirror p');
+  let target = null;
+  for (const p of ps) {
+    // トグル防止: 既に引用済みはスキップ
+    if (p.textContent.startsWith(prefix) && !p.closest('blockquote')) { target = p; break; }
+  }
+  if (!target) return 'already done';
+
+  // 1. スクロールして要素を表示領域に入れる
+  target.scrollIntoView({block: 'center'});
+  await new Promise(r => setTimeout(r, 500));
+
+  // 2. アクティベーション前処理（重要：省略すると失敗率が高くなる）
+  const r = target.getBoundingClientRect();
+  target.dispatchEvent(new MouseEvent('mousedown', {bubbles:true, clientX: r.left+50, clientY: r.top+10}));
+  target.dispatchEvent(new MouseEvent('mouseup', {bubbles:true, clientX: r.left+50, clientY: r.top+10}));
+  target.dispatchEvent(new MouseEvent('click', {bubbles:true, clientX: r.left+50, clientY: r.top+10}));
+  await new Promise(r => setTimeout(r, 300));
+
+  // 3. Range選択
+  const range = document.createRange();
+  range.selectNodeContents(target);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+
+  // 4. selectionchange イベント発火（これが無いと浮動ツールバーが出ない）
+  document.dispatchEvent(new Event('selectionchange'));
+
+  // 5. mouseup でツールバー表示をトリガー
+  target.dispatchEvent(new MouseEvent('mouseup', {bubbles: true, cancelable: true, clientX: r.left+100, clientY: r.top+20}));
+  await new Promise(r => setTimeout(r, 700));
+
+  // 6. 引用ボタンを探す（top 30〜innerHeight-30 の可視範囲で）
+  const btns = document.querySelectorAll('button[aria-label="引用"]');
+  let btn = null;
+  for (const b of btns) {
+    const br = b.getBoundingClientRect();
+    if (br.width > 0 && br.top > 30 && br.top < window.innerHeight - 30) { btn = b; break; }
+  }
+  if (!btn) return 'no btn';
+
+  // 7. クリック
+  btn.click();
+  await new Promise(r => setTimeout(r, 600));
+
+  // 8. 検証
+  const v = Array.from(document.querySelectorAll('.ProseMirror p')).find(p => p.textContent.startsWith(prefix));
+  return v?.closest('blockquote') ? 'OK' : 'FAIL';
+})();
+```
+
+#### 注意事項
+- **バッチ処理禁止**: 1つのJS内で `for` ループで複数要素を処理しない。1段落につき1 `javascript_exec` 呼び出し
+- **失敗時のリトライ**: 同じコードでもう一度呼ぶと通ることが多い（ProseMirror状態の安定化待ち）
+- **click()がJSで効かない場合**: 座標を取得して `computer.left_click` で物理クリックに切り替える
+
+### パターン13: UL → 中黒引用ブロック変換【既存記事編集】
+
+既存の `<ul><li>` 箇条書きを `・` プレフィックス付きの段落に変換し、さらに引用ブロック化する。markdown `>` + `・` 形式を note.com 上で再現する。
+
+#### Step 13-1: ULをパラグラフ化（リスト解除）
+
+1. ULの最初のLIの左端を click で選択
+2. 最後のLIの末尾を shift+click で選択範囲を拡張
+3. `shift+End` で最終行末まで確実に選択
+4. ツールバー「**リスト**」ボタン（`aria-label="リスト"`）をクリック → サブメニュー表示
+5. サブメニューの「**指定なし**」ボタンをクリック
+
+結果: `<ul><li><p>item1</p></li><li><p>item2</p></li></ul>` → `<p>item1<br>item2</p>` のような単一P（`<br>` で区切られた形式）
+
+#### Step 13-2: 各行先頭に「・」を追加
+
+```
+1. 段落の y 座標を取得し、各行の中心 y = top + 18 + (36 * n) で計算
+2. computer.left_click で line 1 をクリック
+3. computer.key("Home") で行頭へ
+4. computer.type("・")
+5. computer.key("Down Home") で次行先頭へ
+6. computer.type("・")
+7. 行数分繰り返し
+```
+
+#### Step 13-3: 引用化
+
+パラグラフ全体を選択してパターン12で引用化：
+- triple_click ではなく Range API で `selectNodeContents(target)` を使う（複数行の `<br>` 区切りを含めて全選択できる）
+- shift+click で全範囲を選択する方法も有効
+
+### パターン14: 既存記事への新規セクション挿入【既存記事編集】
+
+既存のH2見出しの前に新しいセクション（見出し + 本文）を挿入する。
+
+#### 手順
+
+```
+1. ターゲットH2（挿入位置の直後にある既存H2）を特定
+2. その直前にある空Pを探す（prev = konyu.previousElementSibling）
+   - 多くの記事で空Pが存在。なければ type 前に Enter で新規Pを作る
+3. 空Pの座標を取得して computer.left_click
+4. computer.type("📩 新セクション見出し")
+5. triple_click で段落を選択
+6. ツールバー「見出し」ボタンクリック → ドロップダウン出現
+7. 「大見出し」ボタンをクリック（H2化）
+8. 見出しの末尾クリック → computer.key("End")
+9. computer.key("Enter") で本文P作成
+10. computer.type("本文1")
+11. computer.key("Enter Enter") で空行を挟む
+12. 次の本文をtype → 繰り返し
+```
+
+#### 見出しドロップダウンの選択肢
+
+| ボタン | 効果 |
+|---|---|
+| 大見出し | H2 |
+| 小見出し | H3 |
+
+位置は都度 `getBoundingClientRect()` で取得する（スクロール位置で変わる）。
+
+### パターン15: 既編集チェックヘルパー【既存記事編集】
+
+複数箇所を編集する前後で現状をまとめて確認する。トグル事故の早期発見、リトライ時の対象絞り込みに必須。
+
+```javascript
+(() => {
+  // テストケース: [プレフィックス, 表示ラベル]
+  const tests = [
+    ['A: 申し訳ございませんが', 'Q1A'],
+    ['XToolsPro3は Windows', 'Q1-2'],
+    ['対応OS：', 'Q1-3'],
+    ['A: 本ツールへ登録', 'Q2'],
+    // ... 以下、対象箇所を列挙
+  ];
+  const res = [];
+  for (const [prefix, label] of tests) {
+    const ps = Array.from(document.querySelectorAll('.ProseMirror p'));
+    const match = ps.find(x => x.textContent.startsWith(prefix));
+    res.push(`${label}:${match?.closest('blockquote') ? '✓' : '✗'}`);
+  }
+  return res.join(' ');
+})();
+```
+
+#### 出力例
+```
+Q1A:✓ Q1-2:✓ Q1-3:✓ Q2:✓ Q3A:✓ Q3-2:✗ Q4:✓
+```
+
+この出力から「Q3-2 だけ未処理」と即判断でき、対象を絞って追加操作できる。
+
+## 本文表現のガイドライン
+
+### 文体: ですます調で統一
+
+記事本文は **ですます調** を基本とする。「〜である」「〜だ」「〜と言う」等の常体（だ・である調）を混ぜない。
+
+| NG (常体) | OK (ですます調) |
+|---|---|
+| 結論から言う。〜だ。 | 結論からお伝えします。〜です。 |
+| 〜に跳ね上がる。 | 〜に跳ね上がります。 |
+| 〜を作ってきた。 | 〜を作ってきました。 |
+| 〜してほしい。 | 〜してください / 〜をご覧ください。 |
+
+**Why:** 読者との距離感を一定に保ち、説明調の親しみやすさを担保するため。note記事の読者層（個人開発者・副業層）にはですます調の方が届きやすい。
+
+**例外:** 箇条書き項目や図表の見出しなど短文は体言止め可。
+
+### 冒頭まとめ文のNGフレーズ
+
+記事冒頭の悩みパート直後に置く「まとめ文」では、以下のフレーズを **使用しない**：
+
+| NG表現 | 理由 |
+|---|---|
+| `1つでも当てはまるなら、この記事はあなたのために書いた。` | 押しつけがましく昭和のセールスコピー感が強い。「あなた」への直接的な呼びかけが距離感として近すぎる |
+| `〜は必読です。` / `絶対に〜すべき。` | 読者への命令調 |
+| `これを知らないと損する。` | 煽り調 |
+
+### 推奨する代替表現（ですます調）
+
+読者判断を尊重したニュートラルな表現に置き換える：
+
+- **推奨:** `1つでも当てはまるなら、この記事は最後まで読む価値があります。`
+- **推奨:** `1つでも当てはまるなら、このまま読み進めてみてください。`
+- **推奨:** `1つでも当てはまるなら、この記事がきっと役に立つはずです。`
+
+**方針:** 焦点を「あなた(読者)」ではなく「記事の価値」側に寄せ、読者が自分で判断する形にする。命令・断定・煽りではなく、提案・示唆のトーンを使う。
+
 ## 絶対にやってはいけないこと
 
 ### 1. キーボードショートカットの使用禁止
@@ -565,6 +810,15 @@ JSで冒頭の疑問文段落群を特定し、テキスト内容を取得。
 ### 4. dispatchEvent の省略
 - DOM操作後に `dispatchEvent(new Event('input', { bubbles: true }))` を呼ばないと、ProseMirror が変更を認識しない
 - 保存時に変更が失われる原因になる
+
+### 5. 引用ボタンの重複クリック（トグル事故）
+- note.comの「引用」ボタンは**トグル動作**: 既に引用済みの要素に再度クリックすると引用解除される
+- 失敗したと思って再試行すると、実は成功していた操作を取り消してしまう
+- **対策**: パターン12の通り、処理前に `p.closest('blockquote')` で既引用チェック。`!p.closest('blockquote')` のフィルタで既引用を除外する
+
+### 6. 1つのJSでバッチ引用化
+- `for` ループで複数段落を連続処理すると、ProseMirror状態が中盤から壊れ浮動ツールバーが出なくなる
+- **対策**: パターン12の通り、1段落 = 1 `javascript_exec` 呼び出しに分割する
 
 ## エラー対処
 
@@ -592,8 +846,28 @@ JSで冒頭の疑問文段落群を特定し、テキスト内容を取得。
 - `find` ツールで「一時保存」を検索
 - ボタンが無効化されている場合は、エディタ内でクリックしてフォーカスを与えてからリトライ
 
+### スクリーンショットが真っ黒になる（既存記事編集時）
+- note.comエディタは `scrollY > ~5000px` 付近でスクリーンショットが真っ黒になる現象あり
+- エディタ自体は機能しておりDOM操作は効く
+- **対策**: 視覚確認が必要な時は `window.scrollTo(0, 0)` で一旦最上部に戻す
+- DOM状態確認はJSで `JSON.stringify(...)` を使い、スクリーンショットに依存しない
+
+### 浮動ツールバーが出現しない
+- `selectionchange` イベントを発火させていない可能性が高い
+- **対策**: パターン12の手順で `document.dispatchEvent(new Event('selectionchange'))` を明示発火
+- 加えて、対象要素への `mousedown/mouseup/click` でアクティベーションを行う
+- それでも出ない場合は、対象要素に triple_click を物理操作で実行してから JS で Range を上書きする
+
+### 引用化したはずが元に戻っている
+- 「引用」ボタンのトグル動作が原因（禁止事項5参照）
+- 連続処理中に既引用要素に再クリックしてしまっている
+- **対策**: `find` 時のフィルタを `!p.closest('blockquote')` にして既引用を除外する
+- パターン15のチェックヘルパーで処理前後の状態を確認して早期発見
+
 ## バージョン履歴
 
+- ver 2.9 - 2026/04/19 - 既存記事の部分編集パターンを新設。引用ボタンのトグル動作・ProseMirror選択イベント順序（selectionchange必須）・UL中黒変換・新規セクション挿入・既編集チェックの4パターン（12〜15）を追加。禁止事項に「引用ボタン重複クリック」「1JSバッチ引用化」、エラー対処に「スクリーンショット真っ黒」「浮動ツールバー非表示」「引用の消失」を追記
+- ver 2.8 - 2026/04/18 - 「本文表現のガイドライン」を新設。文体はですます調で統一するルールを追加。冒頭まとめ文の押しつけがましいNGフレーズ（「この記事はあなたのために書いた。」等）を禁止し、「最後まで読む価値があります」等のニュートラルな推奨表現（ですます調）に切り替え
 - ver 2.7 - 2026/04/10 - Step 3.5（アイキャッチ画像アップロード）を追加。サムネイルは「画像を追加」→「画像をアップロード」→ file input経由。自動化の制限事項を記載
 - ver 2.6 - 2026/04/10 - テーブル変換ルールを変更: テキスト変換 → 箇条書き(`<ul><li>`)に変換。列挙データはリスト化する
 - ver 2.5 - 2026/04/10 - Step 2: `note.com/notes/new` 経由での遷移に修正（editor.note.comへの直接アクセスはAccess Deniedになる）。Step 5: 引用変換にtriple_click方式の注意事項を追加（JS Selection APIだけではProseMirrorが認識しない）

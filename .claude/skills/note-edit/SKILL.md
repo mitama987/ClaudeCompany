@@ -657,35 +657,86 @@ JSで冒頭の疑問文段落群を特定し、テキスト内容を取得。
 
 ### パターン13: UL → 中黒引用ブロック変換【既存記事編集】
 
-既存の `<ul><li>` 箇条書きを `・` プレフィックス付きの段落に変換し、さらに引用ブロック化する。markdown `>` + `・` 形式を note.com 上で再現する。
+既存の `<ul><li>` 箇条書きを `・` プレフィックス付きの引用ブロックに変換する。markdown `>` + `・` 形式を note.com 上で再現する。
 
-#### Step 13-1: ULをパラグラフ化（リスト解除）
+**注意**: 本プロジェクトでは **箇条書きブロックは常に中黒+引用ブロック形式で表示する** のがデフォルト方針。ULを見つけたら（特に強調したいリスト）積極的にこの変換を提案する。
+
+#### 推奨: 一括DOM置換方式（大量処理向け）
+
+**パターン3（DOM直接操作）は blockquote に限って「壊れる」としていたが、`figure > blockquote > p(・item1<br>・item2)` の完全な構造を構築すればProseMirror が受理することを確認済み**。複数ULを1回のJSで一括変換でき、UI操作不要で高速。
+
+```javascript
+(() => {
+  const editor = document.querySelector('.ProseMirror');
+  const uls = Array.from(editor.querySelectorAll('ul'));
+
+  // ターゲットULを内容の一部で特定
+  const targetFragments = [
+    '対象ULに含まれる一意なテキスト1',
+    '対象ULに含まれる一意なテキスト2',
+    // ...
+  ];
+
+  function uuid() {
+    return (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+      .replace(/[xy]/g, c => { const r = Math.random()*16|0; return (c === 'x' ? r : (r&0x3|0x8)).toString(16); }));
+  }
+
+  function makeQuoteFigure(items) {
+    const fig = document.createElement('figure');
+    fig.setAttribute('name', uuid());
+    fig.setAttribute('id', fig.getAttribute('name'));
+    const bq = document.createElement('blockquote');
+    const p = document.createElement('p');
+    p.setAttribute('name', uuid());
+    p.setAttribute('id', p.getAttribute('name'));
+    items.forEach((text, i) => {
+      if (i > 0) p.appendChild(document.createElement('br'));
+      p.appendChild(document.createTextNode('・' + text));
+    });
+    bq.appendChild(p);
+    fig.appendChild(bq);
+    const cap = document.createElement('figcaption');
+    cap.className = 'figcaption-placeholder';
+    cap.innerHTML = '<br class="ProseMirror-trailingBreak">';
+    fig.appendChild(cap);
+    return fig;
+  }
+
+  let converted = 0;
+  for (const frag of targetFragments) {
+    const ul = uls.find(u => u.textContent.includes(frag) && u.isConnected);
+    if (!ul) continue;
+    const items = Array.from(ul.querySelectorAll('li')).map(li => li.textContent.trim());
+    const fig = makeQuoteFigure(items);
+    ul.parentNode.replaceChild(fig, ul);
+    converted++;
+  }
+  editor.dispatchEvent(new Event('input', { bubbles: true }));
+  return `${converted}/${targetFragments.length} ULs converted`;
+})();
+```
+
+**検証方法**:
+- 変換後、保存を実行し「下書きを保存しました」トーストが出れば成功
+- 変換後にプレビューで表示を確認するとさらに安全
+
+**この方式が機能する条件**:
+- `figure` と `figcaption` を両方含むフル構造を使う（blockquote単体はProseMirrorが再構築で破壊する）
+- `name` / `id` にUUIDを入れる（noteエディタが要素識別に使う）
+- `figcaption` に trailing br を入れる（placeholder要素として機能）
+
+#### フォールバック: UI経由方式（DOM置換が効かない場合）
+
+一括DOMが失敗したら以下のUI操作に切り替える：
 
 1. ULの最初のLIの左端を click で選択
 2. 最後のLIの末尾を shift+click で選択範囲を拡張
 3. `shift+End` で最終行末まで確実に選択
 4. ツールバー「**リスト**」ボタン（`aria-label="リスト"`）をクリック → サブメニュー表示
-5. サブメニューの「**指定なし**」ボタンをクリック
-
-結果: `<ul><li><p>item1</p></li><li><p>item2</p></li></ul>` → `<p>item1<br>item2</p>` のような単一P（`<br>` で区切られた形式）
-
-#### Step 13-2: 各行先頭に「・」を追加
-
-```
-1. 段落の y 座標を取得し、各行の中心 y = top + 18 + (36 * n) で計算
-2. computer.left_click で line 1 をクリック
-3. computer.key("Home") で行頭へ
-4. computer.type("・")
-5. computer.key("Down Home") で次行先頭へ
-6. computer.type("・")
-7. 行数分繰り返し
-```
-
-#### Step 13-3: 引用化
-
-パラグラフ全体を選択してパターン12で引用化：
-- triple_click ではなく Range API で `selectNodeContents(target)` を使う（複数行の `<br>` 区切りを含めて全選択できる）
-- shift+click で全範囲を選択する方法も有効
+5. サブメニューの「**指定なし**」ボタンをクリック → LIがPに変換される
+6. 各行先頭に `・` を type で追加：click→Home→type・ → Down Home→type・ 繰り返し
+7. パラグラフ全体を選択してパターン12で引用化
 
 ### パターン14: 既存記事への新規セクション挿入【既存記事編集】
 
@@ -866,6 +917,7 @@ Q1A:✓ Q1-2:✓ Q1-3:✓ Q2:✓ Q3A:✓ Q3-2:✗ Q4:✓
 
 ## バージョン履歴
 
+- ver 2.10 - 2026/04/19 - パターン13に「UL→中黒引用ブロックの一括DOM置換方式」を追加（`figure>blockquote>p(・item<br>...)` をUUID付きで構築すればProseMirrorが受理、UI操作不要で高速）。本プロジェクトでは箇条書きブロックは中黒+引用形式が方針であることを明記
 - ver 2.9 - 2026/04/19 - 既存記事の部分編集パターンを新設。引用ボタンのトグル動作・ProseMirror選択イベント順序（selectionchange必須）・UL中黒変換・新規セクション挿入・既編集チェックの4パターン（12〜15）を追加。禁止事項に「引用ボタン重複クリック」「1JSバッチ引用化」、エラー対処に「スクリーンショット真っ黒」「浮動ツールバー非表示」「引用の消失」を追記
 - ver 2.8 - 2026/04/18 - 「本文表現のガイドライン」を新設。文体はですます調で統一するルールを追加。冒頭まとめ文の押しつけがましいNGフレーズ（「この記事はあなたのために書いた。」等）を禁止し、「最後まで読む価値があります」等のニュートラルな推奨表現（ですます調）に切り替え
 - ver 2.7 - 2026/04/10 - Step 3.5（アイキャッチ画像アップロード）を追加。サムネイルは「画像を追加」→「画像をアップロード」→ file input経由。自動化の制限事項を記載

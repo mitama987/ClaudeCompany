@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claude Terminal Shortcuts Docs</title>
+  <meta name="description" content="GitHub で配布できる Claude Code 用 Windows Terminal ショートカットの導入ドキュメント。">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="#top" aria-label="Claude Terminal Shortcuts の先頭へ">
+        <span class="brand__mark" aria-hidden="true">C</span>
+        <span>Claude Terminal Shortcuts</span>
+      </a>
+      <nav class="nav" aria-label="主要ナビゲーション">
+        <a href="#install">導入</a>
+        <a href="#publish">公開</a>
+        <a href="#safety">安全</a>
+        <a href="#troubleshooting">対処</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="top" class="hero section">
+      <div class="hero__content">
+        <p class="eyebrow">GitHub Pages ready</p>
+        <h1>Claude Terminal Shortcuts</h1>
+        <p class="hero__lead">
+          Windows Terminal に Claude Code 起動用のショートカットを追加する配布キットです。
+          既存設定をバックアップし、指定したプロジェクトフォルダから `claude` を起動します。
+        </p>
+        <div class="hero__actions" aria-label="主要アクション">
+          <a class="button button--primary" href="#install">インストール手順</a>
+          <a class="button button--secondary" href="#publish">GitHub Pages 公開</a>
+        </div>
+      </div>
+
+      <figure class="terminal-preview" aria-label="Windows Terminal の起動イメージ">
+        <div class="terminal-preview__bar" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <figcaption class="terminal-preview__body">
+          <span class="terminal-line">C:\work\my-project&gt; claude</span>
+          <span class="terminal-line terminal-line--accent">Welcome back</span>
+          <span class="terminal-line">Ctrl+D で右ペイン</span>
+          <span class="terminal-line">Ctrl+E で下ペイン</span>
+          <span class="terminal-line">Ctrl+T で新規タブ</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <section id="install" class="section section--tinted">
+      <div class="section__head">
+        <p class="eyebrow">Quick Start</p>
+        <h2>GitHub から導入する</h2>
+        <p>
+          まず利用者の PC で Claude Code の `claude` コマンドが動く状態にします。
+          次に、このリポジトリの `install.ps1` を実行します。
+        </p>
+      </div>
+
+      <div class="command-grid">
+        <article class="command-panel">
+          <div class="command-panel__head">
+            <h3>Raw スクリプト方式</h3>
+            <button class="icon-button" type="button" data-copy-target="raw-install" aria-label="Raw スクリプト方式のコマンドをコピー">Copy</button>
+          </div>
+          <pre id="raw-install"><code>$script = "$env:TEMP\install-claude-terminal-shortcuts.ps1"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/OWNER/REPO/main/install.ps1" -OutFile $script
+powershell -ExecutionPolicy Bypass -File $script -ProjectPath "C:\path\to\project"</code></pre>
+        </article>
+
+        <article class="command-panel">
+          <div class="command-panel__head">
+            <h3>Clone 方式</h3>
+            <button class="icon-button" type="button" data-copy-target="clone-install" aria-label="Clone 方式のコマンドをコピー">Copy</button>
+          </div>
+          <pre id="clone-install"><code>git clone https://github.com/OWNER/REPO.git
+cd REPO
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -ProjectPath "C:\path\to\project"</code></pre>
+        </article>
+      </div>
+
+      <ol class="steps">
+        <li><span>1</span> `ProjectPath` には Claude Code を開きたいプロジェクトフォルダを指定します。</li>
+        <li><span>2</span> 初回だけ Claude Code の `Yes, I trust this folder` を承認します。</li>
+        <li><span>3</span> 以後は `Ctrl+D`、`Ctrl+E`、`Ctrl+T` から直接 Claude Code を起動できます。</li>
+      </ol>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <p class="eyebrow">What It Changes</p>
+        <h2>追加されるショートカット</h2>
+      </div>
+      <div class="shortcut-table" role="table" aria-label="追加される Windows Terminal ショートカット">
+        <div role="row" class="shortcut-table__row shortcut-table__row--head">
+          <span role="columnheader">キー</span>
+          <span role="columnheader">動作</span>
+          <span role="columnheader">起動先</span>
+        </div>
+        <div role="row" class="shortcut-table__row">
+          <span role="cell"><kbd>Ctrl</kbd> + <kbd>D</kbd></span>
+          <span role="cell">右ペインで Claude Code</span>
+          <span role="cell">指定した `ProjectPath`</span>
+        </div>
+        <div role="row" class="shortcut-table__row">
+          <span role="cell"><kbd>Ctrl</kbd> + <kbd>E</kbd></span>
+          <span role="cell">下ペインで Claude Code</span>
+          <span role="cell">指定した `ProjectPath`</span>
+        </div>
+        <div role="row" class="shortcut-table__row">
+          <span role="cell"><kbd>Ctrl</kbd> + <kbd>T</kbd></span>
+          <span role="cell">新規タブで Claude Code</span>
+          <span role="cell">指定した `ProjectPath`</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="publish" class="section section--split">
+      <div>
+        <p class="eyebrow">Publish</p>
+        <h2>GitHub Pages で公開する</h2>
+        <p>
+          このサイトは `docs/index.html` を入口にした静的サイトです。
+          GitHub の Settings から Pages を有効にし、Source を `Deploy from a branch`、
+          Branch を `main`、Folder を `/docs` に設定します。
+        </p>
+      </div>
+      <div class="checklist" aria-label="公開チェックリスト">
+        <p><strong>公開前チェック</strong></p>
+        <ul>
+          <li>`OWNER/REPO` を実際のリポジトリ名に置き換える</li>
+          <li>`install.ps1` の内容をレビューできるようにしておく</li>
+          <li>README からこのドキュメントサイトへリンクする</li>
+          <li>利用者に初回 trust 承認が必要なことを明記する</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="safety" class="section section--tinted">
+      <div class="section__head">
+        <p class="eyebrow">Safety</p>
+        <h2>配布時の安全ルール</h2>
+        <p>
+          `~/.claude.json` や Claude の認証情報は配布しません。
+          `--dangerously-skip-permissions` は確認画面だけでなく権限確認も緩めるため、標準手順には入れません。
+        </p>
+      </div>
+      <div class="rule-grid">
+        <article class="rule">
+          <h3>配るもの</h3>
+          <p>`install.ps1`、`docs/`、README、LICENSE。</p>
+        </article>
+        <article class="rule">
+          <h3>配らないもの</h3>
+          <p>`~/.claude.json`、個人の Windows Terminal 設定全体、API キー。</p>
+        </article>
+        <article class="rule">
+          <h3>利用者が行うこと</h3>
+          <p>自分の `ProjectPath` を指定し、初回だけ trust ダイアログを承認します。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="troubleshooting" class="section">
+      <div class="section__head">
+        <p class="eyebrow">Troubleshooting</p>
+        <h2>よくある詰まりどころ</h2>
+      </div>
+      <details>
+        <summary>まだ trust 画面が出る</summary>
+        <p>`ProjectPath` が実際に開きたいフォルダと一致しているか確認します。別パス表記のフォルダは Claude Code 側で別ワークスペースとして扱われることがあります。</p>
+      </details>
+      <details>
+        <summary>`claude` が見つからない</summary>
+        <p>Claude Code をインストールし、通常の Windows Terminal で `claude --version` が動くことを確認します。`cc` を使いたい場合は `-LaunchCommand cc` を指定できます。</p>
+      </details>
+      <details>
+        <summary>ショートカットが別用途と衝突する</summary>
+        <p>`install.ps1` は対象キーを上書きします。既存設定は `.bak-日時` としてバックアップされるため、必要に応じて復元できます。</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <strong>Version History</strong>
+      <p>ver0.1 - 2026-04-25 - GitHub 配布向けドキュメントサイトの初版を追加。</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <!-- Version History
+       ver0.1 - 2026-04-25 - GitHub 配布向けドキュメントサイトの初版を追加。 -->
+</body>
+</html>

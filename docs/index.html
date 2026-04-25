@@ -48,7 +48,7 @@
           <span class="terminal-line terminal-line--accent">Welcome back</span>
           <span class="terminal-line">Ctrl+D で右ペイン</span>
           <span class="terminal-line">Ctrl+E で下ペイン</span>
-          <span class="terminal-line">Ctrl+T で新規タブ</span>
+          <span class="terminal-line">Ctrl+T でタブ作成</span>
         </figcaption>
       </figure>
     </section>
@@ -88,7 +88,8 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -ProjectPath "C:\path\to\
       <ol class="steps">
         <li><span>1</span> `ProjectPath` には Claude Code を開きたいプロジェクトフォルダを指定します。</li>
         <li><span>2</span> 初回だけ Claude Code の `Yes, I trust this folder` を承認します。</li>
-        <li><span>3</span> 以後は `Ctrl+D`、`Ctrl+E`、`Ctrl+T` から直接 Claude Code を起動できます。</li>
+        <li><span>3</span> 以後は `Ctrl+D`、`Ctrl+E` から直接 Claude Code を起動できます。`claude` / `cc` では `Ctrl+T` も Windows Terminal の新規タブに割り当てます。</li>
+        <li><span>4</span> `-LaunchCommand ccnest` の場合、`Ctrl+T` は ccnest 内の新規タブ作成に残します。</li>
       </ol>
     </section>
 
@@ -115,8 +116,8 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -ProjectPath "C:\path\to\
         </div>
         <div role="row" class="shortcut-table__row">
           <span role="cell"><kbd>Ctrl</kbd> + <kbd>T</kbd></span>
-          <span role="cell">新規タブで Claude Code</span>
-          <span role="cell">指定した `ProjectPath`</span>
+          <span role="cell">`claude` / `cc` は新規 Terminal タブ。`ccnest` は内部タブ。</span>
+          <span role="cell">`ccnest` では Terminal 側に登録しない</span>
         </div>
       </div>
     </section>
@@ -178,7 +179,11 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -ProjectPath "C:\path\to\
       </details>
       <details>
         <summary>`claude` が見つからない</summary>
-        <p>Claude Code をインストールし、通常の Windows Terminal で `claude --version` が動くことを確認します。`cc` を使いたい場合は `-LaunchCommand cc` を指定できます。</p>
+        <p>Claude Code をインストールし、通常の Windows Terminal で `claude --version` が動くことを確認します。`cc` を使いたい場合は `-LaunchCommand cc`、ccnest を使いたい場合は `-LaunchCommand ccnest` を指定できます。</p>
+      </details>
+      <details>
+        <summary>ccnest の `Ctrl+T` が Terminal の新規タブになる</summary>
+        <p>`-LaunchCommand ccnest` で再実行すると、Windows Terminal 側の `Ctrl+T` 登録を外し、ccnest 内の新規タブ作成にキー入力を渡します。</p>
       </details>
       <details>
         <summary>ショートカットが別用途と衝突する</summary>
@@ -191,11 +196,13 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -ProjectPath "C:\path\to\
     <div>
       <strong>Version History</strong>
       <p>ver0.1 - 2026-04-25 - GitHub 配布向けドキュメントサイトの初版を追加。</p>
+      <p>ver0.2 - 2026-04-25 - ccnest 利用時は Ctrl+T を内部タブ作成に残す説明を追加。</p>
     </div>
   </footer>
 
   <script src="script.js"></script>
   <!-- Version History
-       ver0.1 - 2026-04-25 - GitHub 配布向けドキュメントサイトの初版を追加。 -->
+       ver0.1 - 2026-04-25 - GitHub 配布向けドキュメントサイトの初版を追加。
+       ver0.2 - 2026-04-25 - ccnest 利用時は Ctrl+T を内部タブ作成に残す説明を追加。 -->
 </body>
 </html>

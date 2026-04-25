@@ -19,6 +19,7 @@ GitHub Pages の `/docs` 公開に対応し、利用者が安全に `install.ps1
 - `settings.json` 全体や `~/.claude.json` の配布は明示的に避ける。
 - `--dangerously-skip-permissions` は標準手順に含めず、利用者が初回に trust ダイアログを承認する設計にする。
 - Windows Terminal の既存設定は変更前に `.bak-日時` でバックアップする。
+- `-LaunchCommand ccnest` では Windows Terminal 側に `Ctrl+T` を登録せず、ccnest 内部のタブ作成にキー入力を渡す。
 - 配色は白、ティール、ブルー、アンバー、ローズを分散して使い、単一色に寄せない。
 - タッチターゲットは 44px 以上、フォーカスリングを明示する。
 
@@ -30,8 +31,10 @@ GitHub Pages の `/docs` 公開に対応し、利用者が安全に `install.ps1
 - GitHub 配布、ProjectPath、trust 承認、安全注意がサイトに記載されている。
 - 個人の固定パスをサイトに埋め込まない。
 - インストーラーがバックアップ、JSON 読み書き、UTF-8 出力を使う。
+- `ccnest` 起動時は `Ctrl+T` の Terminal keybinding と NewTab action を追加せず、`claude` / `cc` 起動時は従来どおり追加する。
 - CSS/JS にアクセシビリティ対応と Version History がある。
 
 ## Version History
 
 ver0.1 - 2026-04-25 - GitHub 配布ドキュメントサイトの設計メモを追加。
+ver0.2 - 2026-04-25 - ccnest の Ctrl+T を内部タブに渡す設計メモとテスト方針を追加。

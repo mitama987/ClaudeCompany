@@ -5,7 +5,7 @@ param(
     [ValidateNotNullOrEmpty()]
     [string]$ProjectPath,
 
-    [ValidateSet("claude", "cc")]
+    [ValidateSet("claude", "cc", "ccnest")]
     [string]$LaunchCommand = "claude",
 
     [string]$SettingsPath
@@ -138,6 +138,7 @@ if ($null -eq $settings.PSObject.Properties["keybindings"]) {
 }
 
 $commandLine = "cmd /k $LaunchCommand"
+$reserveCtrlTForNestedTabs = $LaunchCommand -eq "ccnest"
 $managedActionIds = @(
     "ClaudeTerminalShortcuts.SplitRight",
     "ClaudeTerminalShortcuts.SplitDown",
@@ -159,20 +160,26 @@ $newActions = @(
         -Action "splitPane" `
         -Split "down" `
         -CommandLine $commandLine `
-        -StartingDirectory $resolvedProjectPath),
-    (New-ClaudeShortcutAction `
+        -StartingDirectory $resolvedProjectPath)
+)
+
+if (-not $reserveCtrlTForNestedTabs) {
+    $newActions += (New-ClaudeShortcutAction `
         -Id "ClaudeTerminalShortcuts.NewTab" `
         -Name "Claude: new tab" `
         -Action "newTab" `
         -CommandLine $commandLine `
         -StartingDirectory $resolvedProjectPath)
-)
+}
 
 $newKeybindings = @(
     (New-ClaudeKeybinding -Id "ClaudeTerminalShortcuts.SplitRight" -Keys "ctrl+d"),
-    (New-ClaudeKeybinding -Id "ClaudeTerminalShortcuts.SplitDown" -Keys "ctrl+e"),
-    (New-ClaudeKeybinding -Id "ClaudeTerminalShortcuts.NewTab" -Keys "ctrl+t")
+    (New-ClaudeKeybinding -Id "ClaudeTerminalShortcuts.SplitDown" -Keys "ctrl+e")
 )
+
+if (-not $reserveCtrlTForNestedTabs) {
+    $newKeybindings += (New-ClaudeKeybinding -Id "ClaudeTerminalShortcuts.NewTab" -Keys "ctrl+t")
+}
 
 $existingActions = Convert-ToArray $settings.actions
 $settings.actions = @(
@@ -206,8 +213,12 @@ $updatedJson = $settings | ConvertTo-Json -Depth 64
 Write-Host "Claude Terminal Shortcuts installed."
 Write-Host "Project path: $resolvedProjectPath"
 Write-Host "Launch command: $LaunchCommand"
+if ($reserveCtrlTForNestedTabs) {
+    Write-Host "Ctrl+T: reserved for ccnest internal tabs"
+}
 Write-Host "Settings file: $SettingsPath"
 Write-Host "Backup file: $backupPath"
 
 # Version History
 # ver0.1 - 2026-04-25 - Added non-destructive Windows Terminal shortcut installer with backup and UTF-8 output.
+# ver0.2 - 2026-04-25 - Reserved Ctrl+T for ccnest internal tabs while keeping terminal tabs for claude and cc.

@@ -1,3 +1,5 @@
 .env
 __pycache__/
 .cache/
+outputs/
+.company/english/audio/

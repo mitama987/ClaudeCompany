@@ -13,12 +13,15 @@
 ├── CLAUDE.md            ← このファイル
 ├── profile/             ← 日本語インタビュー結果（生メモ）
 ├── scripts/             ← 英訳スクリプト
-│   ├── NN-xxx.en.md     ← 英語のみ（TTS入力。口語＋少しフォーマル）
-│   └── NN-xxx.bi.md     ← 1文ごと英→日のバイリンガル（読解・シャドーイング用）
+│   ├── NN-xxx.en.md     ← 英語のみ（TTS入力。口語＋少しフォーマル、ブロックマーカー付き）
+│   └── NN-xxx.bi.md     ← 1文ごと英→日のバイリンガル（読解・シャドーイング用、ブロック見出し付き）
+├── audio/               ← 生成 mp3（gitignore済み）
+│   ├── NN-xxx.mp3       ← フル音声
+│   └── NN-xxx/          ← ブロック分割
+│       └── bMM-slug.mp3
 └── routine/             ← 日々の練習ログ（YYYY-MM-DD.md）
 ```
 
-音声: `outputs/english/audio/NN-xxx.mp3`（gitignore済み）
 TTSコード: `scripts/english_tts/gen_audio.py`
 
 ## 17トピック（順番）
@@ -42,9 +45,10 @@ TTSコード: `scripts/english_tts/gen_audio.py`
 
 ## 1トピックのループ
 1. **インタビュー**: 秘書が日本語で5〜8問の深掘り質問。回答を `profile/NN-xxx.md` に整理
-2. **英訳（英語のみ）**: 秘書が `scripts/NN-xxx.en.md` を生成（音読・TTSの本体）
-3. **バイリンガル版**: 同じ内容を `scripts/NN-xxx.bi.md` に「1文 EN → 1文 JA」の対訳形式で生成
-4. **音声化**: `uv run python scripts/english_tts/gen_audio.py --topic NN`（入力は `.en.md` のみ）
+2. **英訳（英語のみ）**: 秘書が `scripts/NN-xxx.en.md` を生成。**約20個の暗記単位ブロック**に切って `<!-- BLOCK NN: title -->` マーカーを挿入する
+3. **バイリンガル版**: 同じ20ブロックの順で `scripts/NN-xxx.bi.md` に `### BNN. タイトル / 和題` 見出し付きで「1文 EN → 1文 JA」を並べる
+4. **音声化**: `uv run python scripts/english_tts/gen_audio.py --topic NN`（入力は `.en.md`）
+   - フル音声 `audio/NN-xxx.mp3` と、ブロック別 `audio/NN-xxx/bMM-slug.mp3` の両方を自動生成
 5. **練習ログ**: 任意で `routine/YYYY-MM-DD.md` に記録
 
 ## 英訳スタイル（固定）
@@ -63,6 +67,11 @@ TTSコード: `scripts/english_tts/gen_audio.py`
 ## scripts/ の書き方
 
 ### `scripts/NN-xxx.en.md` （英語のみ・TTS本体）
+- 約20個の暗記単位ブロックに `<!-- BLOCK NN: title -->` マーカーを置く
+- マーカーがあると gen_audio.py が「フルmp3」＋「ブロック別mp3」を自動生成する
+- マーカーが無ければフルmp3のみ
+- ブロックタイトルは英語の短い説明（mp3ファイル名のslugになる）
+
 ```markdown
 ---
 topic: 01-life-flow
@@ -70,18 +79,25 @@ words: 約NNN
 est_minutes: N.N
 voice: alloy
 speed: 1.0
+blocks: 20
 ---
 
-# Life Flow
+# Topic Title
 
-(1〜2分の段落 × 数本。contractions多用、つなぎ表現入り)
+<!-- BLOCK 01: short english title -->
+(2〜4文の塊。1分以内で言い切れる粒度)
+
+<!-- BLOCK 02: another title -->
+(2〜4文)
+
+...
 ```
 
 ### `scripts/NN-xxx.bi.md` （バイリンガル・読解／シャドーイング用）
-- 1文 EN → 直下に 1文 JA の対訳形式
-- セクション見出し（`## §1. ... / ...`）でブロック分け
+- `.en.md` と**同じブロックNNの順**で `### BNN. EN title / 和題` を見出しに
+- 各ブロック内は「1文 EN → 1文 JA」を空行区切りで並べる
 - TTS入力には**使わない**（`.en.md` のみが入力）
-- 文単位なので EN を見ながら意味確認、または JA を読んで EN を口頭で言う練習にも使える
+- mp3 (`bNN-slug.mp3`) と1:1で対応するので、聴きながら .bi.md の同じ BNN を見れば意味確認できる
 
 ```markdown
 ---
@@ -89,16 +105,26 @@ topic: 01-life-flow
 type: bilingual
 voice: alloy
 speed: 1.0
+blocks: 20
 ---
 
-# Life Flow / 人生の流れ
+# Topic Title / 和題
 
-## §1. Section title / 見出し
+> 各ブロックは `audio/NN-xxx/bNN-slug.mp3` に対応。
+
+---
+
+### B01. Block title / 和訳タイトル
 
 So, where do I start?
 さて、どこから話そうか。
 
-(EN文 → JA訳 のペアを空行区切りで続ける)
+I was born in 1989 ...
+1989 年 ...
+
+---
+
+### B02. ...
 ```
 
 ## TTS仕様

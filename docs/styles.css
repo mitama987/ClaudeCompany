@@ -354,7 +354,7 @@ p {
 .plans,
 .basic-grid,
 .addon-grid,
-.trust-grid {
+.developer-proof {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
@@ -365,7 +365,7 @@ p {
 .plan,
 .basic-item,
 .addon-item,
-.trust-item,
+.developer-proof__item,
 .notes,
 .faq-item,
 .faq-more {
@@ -382,7 +382,7 @@ p {
 .reason,
 .basic-item,
 .addon-item,
-.trust-item {
+.developer-proof__item {
   padding: 24px;
 }
 
@@ -398,7 +398,6 @@ p {
 .feature p,
 .basic-item p,
 .addon-item p,
-.trust-item p,
 .plan li,
 .notes p,
 .faq-item p,
@@ -559,9 +558,6 @@ p {
 }
 
 .basic-panel {
-  display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.7fr);
-  gap: 0;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -569,40 +565,12 @@ p {
   box-shadow: var(--shadow);
 }
 
-.basic-panel__main,
-.basic-panel__aside {
+.basic-panel__main {
   padding: 28px;
 }
 
 .basic-panel__main > p {
   max-width: 680px;
-}
-
-.basic-panel__aside {
-  display: flex;
-  flex-direction: column;
-  background: var(--green);
-  color: #fff;
-}
-
-.basic-panel__aside p,
-.basic-panel__aside li,
-.basic-panel__aside .basic-panel__label {
-  color: rgba(255, 255, 255, 0.78);
-}
-
-.basic-panel__aside ul {
-  flex: 1;
-  display: grid;
-  gap: 12px;
-  margin: 0 0 24px;
-  padding: 0;
-  list-style: none;
-}
-
-.basic-panel__aside li {
-  padding-left: 18px;
-  border-left: 3px solid rgba(255, 255, 255, 0.34);
 }
 
 .basic-grid {
@@ -634,7 +602,7 @@ p {
 .addon-item {
   display: flex;
   flex-direction: column;
-  min-height: 288px;
+  min-height: 318px;
 }
 
 .addon-item--featured {
@@ -645,114 +613,144 @@ p {
   color: var(--green);
 }
 
-.addon-item__action {
+.addon-detail {
   margin-top: auto;
-  padding: 10px 12px;
-  border-radius: 6px;
-  background: var(--ink);
-  color: #fff;
-  text-align: center;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.addon-detail summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  color: var(--ink);
   font-size: 14px;
   font-weight: 900;
 }
 
-.addon-item__action:hover {
-  background: var(--accent-dark);
+.addon-detail summary::after {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-right: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  transform: rotate(45deg);
+  transition: transform 180ms ease;
 }
 
-.table-wrap {
-  overflow-x: auto;
+.addon-detail[open] summary::after {
+  transform: rotate(-135deg);
+}
+
+.addon-detail__list {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.addon-detail__list li {
+  position: relative;
+  padding-left: 18px;
+}
+
+.addon-detail__list li::before {
+  content: "";
+  position: absolute;
+  top: 0.72em;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.compare-visual {
+  margin: 0;
+  padding: 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--paper);
   box-shadow: 0 8px 22px rgba(26, 26, 26, 0.05);
 }
 
-.compare-table {
+.compare-image {
   width: 100%;
-  min-width: 760px;
-  border-collapse: collapse;
+  height: auto;
+  display: block;
+  border-radius: calc(var(--radius) - 2px);
+  background: #fff;
 }
 
-.compare-note {
-  caption-side: top;
-  padding: 18px 20px;
-  border-bottom: 1px solid var(--line);
-  color: var(--ink);
-  text-align: left;
-  font-weight: 900;
-}
-
-.compare-table th,
-.compare-table td {
-  padding: 16px 18px;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-}
-
-.compare-table thead th {
-  background: var(--paper-soft);
-  color: var(--ink);
-  font-weight: 900;
-}
-
-.compare-table tbody th {
-  color: var(--ink);
-  font-weight: 900;
-}
-
-.compare-table td {
+.compare-visual figcaption {
+  margin-top: 12px;
   color: var(--muted);
+  font-size: 14px;
+  text-align: center;
 }
 
-.compare-table__highlight {
-  background: rgba(222, 93, 42, 0.1);
-  color: var(--ink) !important;
-  font-weight: 900;
-}
-
-.compare-table tr:last-child th,
-.compare-table tr:last-child td {
-  border-bottom: 0;
-}
-
-.trust-panel {
+.developer-panel {
   padding: 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.82fr);
+  gap: 28px;
+  align-items: center;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--paper);
   box-shadow: var(--shadow);
 }
 
-.trust-story {
-  display: grid;
-  grid-template-columns: minmax(240px, 0.6fr) minmax(0, 1fr);
-  gap: 24px;
-  align-items: start;
-  margin-bottom: 22px;
-  padding-bottom: 22px;
-  border-bottom: 1px solid var(--line);
+.developer-copy h3 {
+  margin-bottom: 14px;
 }
 
-.trust-story h3 {
-  margin-bottom: 0;
+.developer-copy a {
+  color: var(--accent-dark);
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-.trust-item strong {
+.developer-proof {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 22px;
+}
+
+.developer-proof__item {
+  background: var(--paper-soft);
+  box-shadow: none;
+}
+
+.developer-proof__item strong {
   display: block;
   margin-bottom: 8px;
   color: var(--ink);
-  font-size: 30px;
+  font-size: 24px;
   line-height: 1;
 }
 
-.trust-proofline {
-  margin: 20px 0 0;
-  padding: 14px 16px;
-  border-left: 4px solid var(--accent);
-  background: var(--paper-soft);
-  color: var(--ink);
-  font-weight: 800;
+.developer-proof__item span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.developer-visual {
+  margin: 0;
+}
+
+.developer-visual img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 22px rgba(26, 26, 26, 0.08);
 }
 
 .notes {
@@ -905,15 +903,14 @@ p {
 
   .hero__grid,
   .feature,
-  .basic-panel,
-  .trust-story,
+  .developer-panel,
   .problem-grid,
   .reason-grid,
   .plans,
   .basic-grid,
   .basic-panel .basic-grid,
   .addon-grid,
-  .trust-grid {
+  .developer-proof {
     grid-template-columns: 1fr;
   }
 }
@@ -984,4 +981,5 @@ p {
    ver1.3 - 2026-05-06 - Added fixed block spans for the two-line hero headline.
    ver1.4 - 2026-05-06 - Added compact section styles for reasons, basic plan, add-ons, comparison table, and trust blocks.
    ver1.5 - 2026-05-06 - Enriched added sections with stronger card hierarchy, CTAs, comparison highlighting, and trust panel.
-   ver1.6 - 2026-05-06 - Added contact-note styling for the expanded FAQ block. */
+   ver1.6 - 2026-05-06 - Added contact-note styling for the expanded FAQ block.
+   ver1.7 - 2026-05-06 - Styled add-on detail toggles, image comparison, and developer introduction section. */

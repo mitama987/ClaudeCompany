@@ -23,6 +23,8 @@ class DocumentationSiteTests(unittest.TestCase):
             "docs/assets/images/community_branch.png",
             "docs/assets/images/auto_dm_flow.png",
             "docs/assets/images/amazon_flow.png",
+            "docs/assets/images/plan_compare.png",
+            "docs/assets/images/developer_profile.webp",
             "install.ps1",
             ".docs/github-distribution-docs-site.md",
             ".docs/xtp3-rich-lp.md",
@@ -46,14 +48,18 @@ class DocumentationSiteTests(unittest.TestCase):
             "¥2,980の基本版でできること",
             "必要になったら足せるアドオン",
             "3プランを横で比較",
-            "信頼材料",
             "AI生成パック",
             "マルチアカウントパック",
             "こんな人に",
-            "アドオンで広がる",
+            "含まれるもの",
             "まずは基本版で十分",
-            "開発・運用の背景",
-            "迷ったら買い切り + アドオン",
+            "開発者について",
+            "大企業品質を、個人にも。",
+            "早稲田大学院",
+            "上場企業でAI推進",
+            "マイナビ社",
+            "XToolsシリーズ",
+            "3年の歳月",
             "目安100アカウント",
             "10アカウント程度",
             "投稿時刻をずらす",
@@ -72,6 +78,13 @@ class DocumentationSiteTests(unittest.TestCase):
         ]
         for phrase in required_phrases:
             self.assertIn(phrase, html)
+
+        removed_phrases = [
+            "信頼材料。",
+            "アドオンで広がる",
+        ]
+        for phrase in removed_phrases:
+            self.assertNotIn(phrase, html)
 
         old_site_phrases = [
             "Claude Terminal Shortcuts",
@@ -110,13 +123,15 @@ class DocumentationSiteTests(unittest.TestCase):
         visible_text = re.sub(r"<[^>]+>", "", visible_text)
         visible_text = re.sub(r"\s+", "", visible_text)
 
-        self.assertLess(len(visible_text), 8000)
+        self.assertLess(len(visible_text), 8400)
         self.assertIn('src="assets/images/feature_map.png"', html)
         self.assertIn('src="assets/images/random_flow.png"', html)
         self.assertIn('src="assets/images/proxy_protection.png"', html)
         self.assertIn('src="assets/images/community_branch.png"', html)
         self.assertIn('src="assets/images/auto_dm_flow.png"', html)
         self.assertIn('src="assets/images/amazon_flow.png"', html)
+        self.assertIn('src="assets/images/plan_compare.png"', html)
+        self.assertIn('src="assets/images/developer_profile.webp"', html)
         self.assertNotIn("assets.st-note.com", html)
         self.assertNotIn("C:\\Users\\mitam\\Desktop\\work\\90_other\\ClaudeCompany", html)
 
@@ -130,18 +145,20 @@ class DocumentationSiteTests(unittest.TestCase):
             "¥2,980の基本版でできること",
             "必要になったら足せるアドオン",
             "3プランを横で比較",
-            "信頼材料",
+            "開発者について",
             "よくある質問。",
         ]
         positions = [html.index(text) for text in expected_order]
         self.assertEqual(positions, sorted(positions))
-        self.assertIn('class="compare-table"', html)
+        self.assertIn('class="compare-visual', html)
         self.assertIn('class="addon-grid"', html)
         self.assertIn('class="reason-card', html)
         self.assertIn('class="basic-panel', html)
-        self.assertIn('class="addon-item__action"', html)
-        self.assertIn('class="compare-table__highlight"', html)
-        self.assertIn('class="trust-panel', html)
+        self.assertIn('class="addon-detail"', html)
+        self.assertIn('class="developer-panel', html)
+        self.assertNotIn('class="basic-panel__aside"', html)
+        self.assertNotIn('class="addon-item__action"', html)
+        self.assertNotIn('class="compare-table"', html)
 
     def test_reference_sections_have_richer_visual_structure(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
@@ -150,11 +167,11 @@ class DocumentationSiteTests(unittest.TestCase):
         rich_classes = [
             "reason-card__meta",
             "basic-panel__main",
-            "basic-panel__aside",
             "addon-item__best",
-            "compare-note",
-            "trust-story",
-            "trust-proofline",
+            "addon-detail__list",
+            "compare-image",
+            "developer-copy",
+            "developer-proof",
         ]
         for class_name in rich_classes:
             self.assertIn(class_name, html)
@@ -162,11 +179,25 @@ class DocumentationSiteTests(unittest.TestCase):
         for selector in [
             ".reason-card::before",
             ".basic-panel",
-            ".addon-item__action",
-            ".compare-table__highlight",
-            ".trust-panel",
+            ".addon-detail",
+            ".compare-visual",
+            ".developer-panel",
         ]:
             self.assertIn(selector, css)
+
+    def test_addons_use_toggles_and_compare_is_an_image(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+
+        self.assertEqual(html.count('<details class="addon-detail">'), 5)
+        self.assertEqual(html.count("含まれるものを見る"), 5)
+        self.assertIn("投稿案のたたき台作成", html)
+        self.assertIn("いいね・フォローなどの反応獲得補助", html)
+        self.assertIn("目安100アカウントまで登録", html)
+        self.assertIn("指定コミュニティへの投稿", html)
+        self.assertIn("Keepa連携による在庫監視", html)
+        self.assertIn('class="compare-image"', html)
+        self.assertIn('alt="無料版、買い切り、フル買切りの3プラン比較表"', html)
+        self.assertNotIn("<table", html)
 
     def test_reference_faq_is_added_without_touching_minimal_variant(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
@@ -356,3 +387,4 @@ if __name__ == "__main__":
 # ver0.11 - 2026-05-06 - Added checks for concise reference-inspired sections, add-ons, and plan comparison.
 # ver0.12 - 2026-05-06 - Added checks for richer visual structure in reference-inspired sections.
 # ver0.13 - 2026-05-06 - Added checks for expanded reference FAQ and preserved minimal variant.
+# ver0.14 - 2026-05-06 - Added checks for toggle add-ons, image-based comparison, and developer introduction section.

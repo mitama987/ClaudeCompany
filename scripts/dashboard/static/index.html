@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trello Task Dashboard</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <h1>📊 Trello タスク分析ダッシュボード</h1>
+    <div class="header-actions">
+      <button id="refreshBtn" type="button">🔄 Trello 再同期</button>
+      <span id="refreshStatus" class="refresh-status"></span>
+    </div>
+  </header>
+
+  <section class="goal-panel" id="goalPanel">
+    <div class="goal-head">
+      <h2>🎯 収益目標の現在地</h2>
+      <div id="goalMeta" class="goal-meta">--</div>
+    </div>
+    <div id="goalBars" class="goal-bars"></div>
+    <div class="goal-body">
+      <div class="goal-trend-wrap">
+        <canvas id="revenueTrendChart"></canvas>
+      </div>
+      <div class="goal-initiatives" id="goalInitiatives"></div>
+    </div>
+  </section>
+
+  <section class="summary-cards">
+    <div class="card"><div class="label">期間</div><div id="stat-period" class="value">--</div></div>
+    <div class="card"><div class="label">総カード数</div><div id="stat-total" class="value">--</div></div>
+    <div class="card"><div class="label">完了率</div><div id="stat-rate" class="value">--</div></div>
+    <div class="card"><div class="label">経過日数 中央値</div><div id="stat-median" class="value">--</div></div>
+    <div class="card"><div class="label">合計経過日数</div><div id="stat-sum" class="value">--</div></div>
+  </section>
+
+  <main class="grid">
+    <section class="panel panel-chart">
+      <h2>ラベル別 投下時間（経過日数合計）</h2>
+      <canvas id="labelChart"></canvas>
+    </section>
+
+    <section class="panel panel-chart">
+      <h2>月次推移（ラベル別積み上げ）</h2>
+      <canvas id="monthlyChart"></canvas>
+    </section>
+
+    <section class="panel panel-chart">
+      <h2>エンゲージメント散布図 (X: 経過日数 / Y: コメント+チェック)</h2>
+      <canvas id="scatterChart"></canvas>
+    </section>
+
+    <aside class="panel panel-insights" id="insightsPanel">
+      <h2>💡 示唆・アラート</h2>
+      <div id="insightsList" class="insights-list">
+        <p class="loading">読み込み中...</p>
+      </div>
+    </aside>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

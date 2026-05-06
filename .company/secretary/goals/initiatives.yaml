@@ -1,0 +1,42 @@
+# 月10万円 → 年1億 へ効くイニシアチブ.
+# status: done | in_progress | pending | blocked
+# source: .company/secretary/notes/2026-03-26-decisions.md, 2026-03-29-decisions.md
+
+initiatives:
+  - name: "XTP4 P0機能リリース (手動/予約/AI投稿/AIリプ/複数Ac/Stripe)"
+    category: 開発
+    status: in_progress
+    due: "2026-04-30"
+    rationale: "サブスク収益の核. 2026-03-26 決定1"
+
+  - name: "アドオン購入導線修正 (addon-manager + lp.html)"
+    category: 収益
+    status: done
+    completed: "2026-03-29"
+    rationale: "本体¥5K天井の中、アドオンで+¥3-4K 狙い"
+
+  - name: "m840419 ヒアリング (法人ニーズ把握)"
+    category: 営業
+    status: pending
+    due: "2026-04-30"
+    rationale: "3月売上37%がこの1顧客. 依存度軽減と法人プラン設計の両立"
+
+  - name: "ココナラ法人向けパッケージ整理"
+    category: 営業
+    status: pending
+    rationale: "高単価フローの整理. 2026-03-26 決定1"
+
+  - name: "XTP3 買切りユーザーへの XTP4移行案内メール"
+    category: マーケ
+    status: pending
+    rationale: "既存ユーザーのサブスク化. 買切り→Pro 3ヶ月無料"
+
+  - name: "SocialDog比較表 LP 追加"
+    category: マーケ
+    status: pending
+    rationale: "ポジショニング明確化. 2026-03-26 決定4"
+
+  - name: "XTP4 価格 ¥2,980/月 で公開"
+    category: 開発
+    status: pending
+    rationale: "SocialDog Personal ¥1,980 と Professional ¥9,800 のスイートスポット"

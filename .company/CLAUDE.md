@@ -16,12 +16,17 @@
 │   ├── inbox/
 │   ├── todos/
 │   └── notes/
-└── marketing/
+├── marketing/
+│   ├── CLAUDE.md
+│   ├── content-plan/
+│   ├── campaigns/
+│   ├── tips/
+│   └── research/
+└── english/
     ├── CLAUDE.md
-    ├── content-plan/
-    ├── campaigns/
-    ├── tips/
-    └── research/
+    ├── profile/
+    ├── scripts/
+    └── routine/
 ```
 
 
@@ -32,6 +37,7 @@
 |------|---------|------|
 | 秘書室 | secretary | 窓口・相談役。TODO管理、壁打ち、メモ。常設。 |
 | マーケティング（X運用） | marketing | X運用戦略、ポスト企画・生成、リサーチ、エンゲージメント分析。 |
+| 英語学習 | english | 自分プロファイル英語化＋暗記。インタビュー→英訳→TTS音声化までワンストップ。 |
 
 
 ## 運営ルール

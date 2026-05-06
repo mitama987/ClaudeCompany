@@ -3,7 +3,8 @@
     "allow": [
       "mcp__trello__get_board_labels",
       "mcp__trello__create_label",
-      "mcp__trello__update_card_details"
+      "mcp__trello__update_card_details",
+      "Bash(source .env && export GEMINI_API_KEY)"
     ]
   }
 }

@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 import re
 import shutil
+import struct
 import subprocess
 import unittest
 import uuid
@@ -197,6 +198,9 @@ class DocumentationSiteTests(unittest.TestCase):
         self.assertIn("Keepa連携による在庫監視", html)
         self.assertIn('class="compare-image"', html)
         self.assertIn('alt="無料版、買い切り、フル買切りの3プラン比較表"', html)
+        self.assertIn('width="1800" height="900"', html)
+        self.assertIn("比較表を画像化しています", html)
+        self.assertEqual(self.png_dimensions(ROOT / "docs/assets/images/plan_compare.png"), (1800, 900))
         self.assertNotIn("<table", html)
 
     def test_reference_faq_is_added_without_touching_minimal_variant(self):
@@ -305,6 +309,14 @@ class DocumentationSiteTests(unittest.TestCase):
         self.assertIn("Version History", js)
 
     @staticmethod
+    def png_dimensions(path):
+        with path.open("rb") as image_file:
+            header = image_file.read(24)
+        if not header.startswith(b"\x89PNG\r\n\x1a\n"):
+            raise AssertionError(f"{path} is not a PNG file")
+        return struct.unpack(">II", header[16:24])
+
+    @staticmethod
     def as_list(value):
         if value is None:
             return []
@@ -388,3 +400,4 @@ if __name__ == "__main__":
 # ver0.12 - 2026-05-06 - Added checks for richer visual structure in reference-inspired sections.
 # ver0.13 - 2026-05-06 - Added checks for expanded reference FAQ and preserved minimal variant.
 # ver0.14 - 2026-05-06 - Added checks for toggle add-ons, image-based comparison, and developer introduction section.
+# ver0.15 - 2026-05-06 - Required the comparison image to be a table-style PNG instead of plan cards.

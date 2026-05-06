@@ -14,6 +14,7 @@ class DocumentationSiteTests(unittest.TestCase):
     def test_public_site_files_exist(self):
         for relative_path in [
             "docs/index.html",
+            "docs/index-minimal.html",
             "docs/styles.css",
             "docs/script.js",
             "docs/assets/images/feature_map.png",
@@ -41,6 +42,13 @@ class DocumentationSiteTests(unittest.TestCase):
             "コミュニティ投稿",
             "自動DM",
             "Amazon在庫復活",
+            "選ばれる理由",
+            "¥2,980の基本版でできること",
+            "必要になったら足せるアドオン",
+            "3プランを横で比較",
+            "信頼材料",
+            "AI生成パック",
+            "マルチアカウントパック",
             "目安100アカウント",
             "10アカウント程度",
             "投稿時刻をずらす",
@@ -66,6 +74,15 @@ class DocumentationSiteTests(unittest.TestCase):
         self.assertRegex(html, r"aria-label=\"[^\"]+\"")
         self.assertIn('"@type": "Product"', html)
 
+    def test_minimum_landing_page_variant_is_preserved(self):
+        minimal = (ROOT / "docs/index-minimal.html").read_text(encoding="utf-8")
+
+        self.assertIn("XToolsPro3", minimal)
+        self.assertIn("必要な機能だけ、短く見る。", minimal)
+        self.assertIn("月額なし。買い切りで始める。", minimal)
+        self.assertNotIn("必要になったら足せるアドオン", minimal)
+        self.assertNotIn("3プランを横で比較", minimal)
+
     def test_hero_headline_has_fixed_two_line_break(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
         css = (ROOT / "docs/styles.css").read_text(encoding="utf-8")
@@ -81,7 +98,7 @@ class DocumentationSiteTests(unittest.TestCase):
         visible_text = re.sub(r"<[^>]+>", "", visible_text)
         visible_text = re.sub(r"\s+", "", visible_text)
 
-        self.assertLess(len(visible_text), 5200)
+        self.assertLess(len(visible_text), 7200)
         self.assertIn('src="assets/images/feature_map.png"', html)
         self.assertIn('src="assets/images/random_flow.png"', html)
         self.assertIn('src="assets/images/proxy_protection.png"', html)
@@ -90,6 +107,24 @@ class DocumentationSiteTests(unittest.TestCase):
         self.assertIn('src="assets/images/amazon_flow.png"', html)
         self.assertNotIn("assets.st-note.com", html)
         self.assertNotIn("C:\\Users\\mitam\\Desktop\\work\\90_other\\ClaudeCompany", html)
+
+    def test_reference_sections_are_added_without_long_page_bloat(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+
+        expected_order = [
+            "選ばれる理由",
+            "必要な機能だけ、短く見る。",
+            "月額なし。買い切りで始める。",
+            "¥2,980の基本版でできること",
+            "必要になったら足せるアドオン",
+            "3プランを横で比較",
+            "信頼材料",
+            "よくある質問。",
+        ]
+        positions = [html.index(text) for text in expected_order]
+        self.assertEqual(positions, sorted(positions))
+        self.assertIn('class="compare-table"', html)
+        self.assertIn('class="addon-grid"', html)
 
     def test_feature_copy_appears_before_feature_images(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
@@ -251,3 +286,4 @@ if __name__ == "__main__":
 # ver0.8 - 2026-05-06 - Updated public site checks for GPT Images 2 PNG feature assets.
 # ver0.9 - 2026-05-06 - Required every feature item to use the full-width copy-first feature layout.
 # ver0.10 - 2026-05-06 - Added checks for fixed two-line hero headline and clearer account limit FAQ copy.
+# ver0.11 - 2026-05-06 - Added checks for concise reference-inspired sections, add-ons, and plan comparison.

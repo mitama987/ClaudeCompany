@@ -3,6 +3,12 @@
 ## 役割
 オーナーの「自分プロファイル英語化＋暗記」プロジェクトの本拠地。初対面の英語ネイティブとの1〜2時間の会話で出てくる定型トピックを、日本語インタビュー → 口語＋少しフォーマルの英訳 → OpenAI TTSで音声化、までワンセットで運用する。
 
+## 関連リポジトリ
+- 練習用 WEB アプリ（暗記モード・PWA）: 別リポ **`mitama987/english-memorize`**（Next.js + Tailwind）
+  - `C:\Users\mitam\Desktop\work\56_english-memorize\` で開発
+  - GitHub Actions が ClaudeCompany を clone してビルド時に `.bi.md` と `audio/` を取り込む
+  - そのため `audio/` は `.gitignore` から外して mp3 を commit している
+
 ## 窓口
 - オーナーは秘書経由で英語部署にアクセスする（窓口は秘書）
 - 秘書がインタビュー進行・整理・英訳・TTS実行までワンストップで担当する

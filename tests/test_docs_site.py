@@ -183,8 +183,38 @@ class DocumentationSiteTests(unittest.TestCase):
             ".addon-detail",
             ".compare-visual",
             ".developer-panel",
+            ".developer-timeline",
         ]:
             self.assertIn(selector, css)
+
+    def test_developer_profile_has_mobile_timeline_fallback(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        css = (ROOT / "docs/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn('class="developer-timeline"', html)
+        self.assertIn('aria-label="スマホ向け開発者プロフィール"', html)
+        for phrase in [
+            "早稲田大学大学院 修了",
+            "上場企業でAI推進担当",
+            "プログラミング独学",
+            "XToolsPro3開発",
+            "X自動化",
+            "Instagram自動化",
+            "AI推進",
+            "スクレイピング",
+            "Bot開発",
+        ]:
+            self.assertIn(phrase, html)
+
+        self.assertRegex(css, r"\.developer-timeline\s*\{[\s\S]*display:\s*none;")
+        self.assertRegex(
+            css,
+            r"@media\s*\(max-width:\s*640px\)\s*\{[\s\S]*\.developer-visual\s*\{[\s\S]*display:\s*none;",
+        )
+        self.assertRegex(
+            css,
+            r"@media\s*\(max-width:\s*640px\)\s*\{[\s\S]*\.developer-timeline\s*\{[\s\S]*display:\s*block;",
+        )
 
     def test_addons_use_toggles_and_compare_is_an_image(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
@@ -401,3 +431,4 @@ if __name__ == "__main__":
 # ver0.13 - 2026-05-06 - Added checks for expanded reference FAQ and preserved minimal variant.
 # ver0.14 - 2026-05-06 - Added checks for toggle add-ons, image-based comparison, and developer introduction section.
 # ver0.15 - 2026-05-06 - Required the comparison image to be a table-style PNG instead of plan cards.
+# ver0.16 - 2026-05-06 - Added checks for mobile developer profile timeline fallback.

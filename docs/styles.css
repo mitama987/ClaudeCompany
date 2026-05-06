@@ -753,6 +753,71 @@ p {
   box-shadow: 0 8px 22px rgba(26, 26, 26, 0.08);
 }
 
+.developer-timeline {
+  display: none;
+}
+
+.developer-timeline__list {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.developer-timeline__list li {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-soft);
+}
+
+.developer-timeline__num {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.developer-timeline strong {
+  display: block;
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.developer-timeline span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.developer-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.developer-tags span {
+  padding: 7px 10px;
+  border: 1px solid rgba(47, 93, 140, 0.34);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+}
+
 .notes {
   padding: 22px 24px;
   display: grid;
@@ -953,6 +1018,22 @@ p {
     align-items: flex-start;
     flex-direction: column;
   }
+
+  .developer-panel {
+    padding: 22px;
+  }
+
+  .developer-visual {
+    display: none;
+  }
+
+  .developer-timeline {
+    display: block;
+  }
+
+  .developer-proof {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -982,4 +1063,5 @@ p {
    ver1.4 - 2026-05-06 - Added compact section styles for reasons, basic plan, add-ons, comparison table, and trust blocks.
    ver1.5 - 2026-05-06 - Enriched added sections with stronger card hierarchy, CTAs, comparison highlighting, and trust panel.
    ver1.6 - 2026-05-06 - Added contact-note styling for the expanded FAQ block.
-   ver1.7 - 2026-05-06 - Styled add-on detail toggles, image comparison, and developer introduction section. */
+   ver1.7 - 2026-05-06 - Styled add-on detail toggles, image comparison, and developer introduction section.
+   ver1.8 - 2026-05-06 - Added mobile-only developer profile timeline and tag layout. */

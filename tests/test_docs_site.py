@@ -34,11 +34,16 @@ class DocumentationSiteTests(unittest.TestCase):
         required_phrases = [
             "XToolsPro3",
             "API不要",
+            "X自動投稿を、",
+            "もっと自然に。",
             "ランダム投稿",
             "プロキシ",
             "コミュニティ投稿",
             "自動DM",
             "Amazon在庫復活",
+            "目安100アカウント",
+            "10アカウント程度",
+            "投稿時刻をずらす",
             "無料版",
             "¥2,980",
             "¥19,800",
@@ -60,6 +65,14 @@ class DocumentationSiteTests(unittest.TestCase):
         self.assertRegex(html, r"<footer\b")
         self.assertRegex(html, r"aria-label=\"[^\"]+\"")
         self.assertIn('"@type": "Product"', html)
+
+    def test_hero_headline_has_fixed_two_line_break(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        css = (ROOT / "docs/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn('<span class="headline-line">X自動投稿を、</span>', html)
+        self.assertIn('<span class="headline-line">もっと自然に。</span>', html)
+        self.assertRegex(css, r"\.headline-line\s*\{[\s\S]*display:\s*block;")
 
     def test_index_is_concise_and_uses_local_visual_assets(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
@@ -237,3 +250,4 @@ if __name__ == "__main__":
 # ver0.7 - 2026-05-06 - Added checks for rich SVG feature assets and copy-before-image feature layout.
 # ver0.8 - 2026-05-06 - Updated public site checks for GPT Images 2 PNG feature assets.
 # ver0.9 - 2026-05-06 - Required every feature item to use the full-width copy-first feature layout.
+# ver0.10 - 2026-05-06 - Added checks for fixed two-line hero headline and clearer account limit FAQ copy.

@@ -65,6 +65,10 @@ h1 {
   line-height: 1.08;
 }
 
+.headline-line {
+  display: block;
+}
+
 h2 {
   margin-bottom: 14px;
   font-size: 36px;
@@ -684,4 +688,5 @@ p {
 /* Version History
    ver1.0 - 2026-05-06 - Added responsive visual styling for the concise XToolsPro3 GitHub Pages landing page.
    ver1.1 - 2026-05-06 - Changed feature sections to copy-first cards and adjusted image spacing for richer diagrams.
-   ver1.2 - 2026-05-06 - Removed compact three-card feature layout so every feature visual can render at full width. */
+   ver1.2 - 2026-05-06 - Removed compact three-card feature layout so every feature visual can render at full width.
+   ver1.3 - 2026-05-06 - Added fixed block spans for the two-line hero headline. */

@@ -3,206 +3,271 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Claude Terminal Shortcuts Docs</title>
-  <meta name="description" content="GitHub で配布できる Claude Code 用 Windows Terminal ショートカットの導入ドキュメント。">
+  <title>XToolsPro3 | API不要のX自動投稿ツール</title>
+  <meta name="description" content="XToolsPro3はAPI不要・買い切り型のX自動投稿ツール。ランダム投稿、複数アカウント、プロキシ、自動DM、Amazon在庫復活まで少ない手間で運用できます。">
+  <meta property="og:title" content="XToolsPro3 | API不要のX自動投稿ツール">
+  <meta property="og:description" content="無料版あり。¥2,980から始められる買い切り型のX自動投稿ツール。">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/feature_map.png">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "XToolsPro3",
+    "description": "API不要のX自動投稿ツール。ランダム投稿、複数アカウント、プロキシ、自動DM、Amazon在庫復活に対応。",
+    "brand": { "@type": "Brand", "name": "Youパパ" },
+    "offers": [
+      { "@type": "Offer", "name": "無料版", "price": "0", "priceCurrency": "JPY" },
+      { "@type": "Offer", "name": "買い切り + アドオン", "price": "2980", "priceCurrency": "JPY" },
+      { "@type": "Offer", "name": "フル買切り", "price": "19800", "priceCurrency": "JPY" }
+    ]
+  }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main">本文へ移動</a>
+
   <header class="site-header">
-    <div class="site-header__inner">
-      <a class="brand" href="#top" aria-label="Claude Terminal Shortcuts の先頭へ">
-        <span class="brand__mark" aria-hidden="true">C</span>
-        <span>Claude Terminal Shortcuts</span>
+    <div class="wrap nav">
+      <a class="brand" href="#top" aria-label="XToolsPro3の先頭へ">
+        <span class="brand__mark" aria-hidden="true">X</span>
+        <span>XToolsPro3</span>
       </a>
-      <nav class="nav" aria-label="主要ナビゲーション">
-        <a href="#install">導入</a>
-        <a href="#publish">公開</a>
-        <a href="#safety">安全</a>
-        <a href="#troubleshooting">対処</a>
+      <nav class="nav__links" aria-label="主要ナビゲーション">
+        <a href="#features">機能</a>
+        <a href="#pricing">料金</a>
+        <a href="#faq">FAQ</a>
       </nav>
+      <a class="button button--ghost button--small" href="https://note.com/youpapalife/n/n2b0ec123439d">無料版</a>
     </div>
   </header>
 
   <main id="main">
-    <section id="top" class="hero section">
-      <div class="hero__content">
-        <p class="eyebrow">GitHub Pages ready</p>
-        <h1>Claude Terminal Shortcuts</h1>
-        <p class="hero__lead">
-          Windows Terminal に Claude Code 起動用のショートカットを追加する配布キットです。
-          既存設定をバックアップし、指定したプロジェクトフォルダから `claude` を起動します。
-        </p>
-        <div class="hero__actions" aria-label="主要アクション">
-          <a class="button button--primary" href="#install">インストール手順</a>
-          <a class="button button--secondary" href="#publish">GitHub Pages 公開</a>
+    <section class="hero" id="top">
+      <div class="wrap hero__grid">
+        <div class="hero__copy reveal-item">
+          <p class="eyebrow">API不要 / 買い切り / 無料版あり</p>
+          <h1>X自動投稿を、もっと自然に。</h1>
+          <p class="lead">
+            XToolsPro3は、IDとパスワードだけで始められるX(Twitter)自動投稿ツールです。
+            ランダム投稿、複数アカウント、プロキシ、自動DMまでまとめて管理できます。
+          </p>
+          <div class="hero__actions" aria-label="主要アクション">
+            <a class="button button--primary" href="https://page.theapps.jp/charge/join/E8hv3G40M25k43r2">
+              <span>¥2,980から始める</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+            </a>
+            <a class="button button--secondary" href="https://note.com/youpapalife/n/n2b0ec123439d">
+              <span>無料版を試す</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg>
+            </a>
+          </div>
+          <dl class="proof" aria-label="XToolsPro3の特徴">
+            <div><dt>¥0</dt><dd>無料版あり</dd></div>
+            <div><dt>買切</dt><dd>月額なし</dd></div>
+            <div><dt>100+</dt><dd>導入実績</dd></div>
+          </dl>
         </div>
+        <figure class="hero__visual reveal-item">
+          <img src="assets/images/feature_map.png" alt="XToolsPro3の機能マップ" width="1672" height="941" loading="eager">
+        </figure>
       </div>
-
-      <figure class="terminal-preview" aria-label="Windows Terminal の起動イメージ">
-        <div class="terminal-preview__bar" aria-hidden="true">
-          <span></span><span></span><span></span>
-        </div>
-        <figcaption class="terminal-preview__body">
-          <span class="terminal-line">C:\work\my-project&gt; claude</span>
-          <span class="terminal-line terminal-line--accent">Welcome back</span>
-          <span class="terminal-line">Ctrl+D で右ペイン</span>
-          <span class="terminal-line">Ctrl+E で下ペイン</span>
-          <span class="terminal-line">Ctrl+T でタブ作成</span>
-        </figcaption>
-      </figure>
     </section>
 
-    <section id="install" class="section section--tinted">
-      <div class="section__head">
-        <p class="eyebrow">Quick Start</p>
-        <h2>GitHub から導入する</h2>
-        <p>
-          まず利用者の PC で Claude Code の `claude` コマンドが動く状態にします。
-          次に、このリポジトリの `install.ps1` を実行します。
-        </p>
+    <section class="section section--paper">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="eyebrow">Problems</p>
+          <h2>手動運用の面倒を、まとめて減らす。</h2>
+        </div>
+        <div class="problem-grid">
+          <article class="mini-card reveal-item">
+            <span class="mini-card__num">01</span>
+            <h3>API料金を気にしない</h3>
+            <p>ブラウザ自動化で動くため、X APIの申請や高額なAPI課金を避けられます。</p>
+          </article>
+          <article class="mini-card reveal-item">
+            <span class="mini-card__num">02</span>
+            <h3>投稿を人間らしく散らす</h3>
+            <p>100件プールからランダムに選び、時間もずらして機械的な投稿感を抑えます。</p>
+          </article>
+          <article class="mini-card reveal-item">
+            <span class="mini-card__num">03</span>
+            <h3>複数アカウントを守る</h3>
+            <p>アカウント別プロキシで、同一IPによる連鎖凍結リスクを分散します。</p>
+          </article>
+        </div>
       </div>
+    </section>
 
-      <div class="command-grid">
-        <article class="command-panel">
-          <div class="command-panel__head">
-            <h3>Raw スクリプト方式</h3>
-            <button class="icon-button" type="button" data-copy-target="raw-install" aria-label="Raw スクリプト方式のコマンドをコピー">Copy</button>
-          </div>
-          <pre id="raw-install"><code>$script = "$env:TEMP\install-claude-terminal-shortcuts.ps1"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/OWNER/REPO/main/install.ps1" -OutFile $script
-powershell -ExecutionPolicy Bypass -File $script -ProjectPath "C:\path\to\project"</code></pre>
-        </article>
+    <section class="section" id="features">
+      <div class="wrap">
+        <div class="section__head section__head--center">
+          <p class="eyebrow">Features</p>
+          <h2>必要な機能だけ、短く見る。</h2>
+        </div>
 
-        <article class="command-panel">
-          <div class="command-panel__head">
-            <h3>Clone 方式</h3>
-            <button class="icon-button" type="button" data-copy-target="clone-install" aria-label="Clone 方式のコマンドをコピー">Copy</button>
-          </div>
-          <pre id="clone-install"><code>git clone https://github.com/OWNER/REPO.git
-cd REPO
-powershell -ExecutionPolicy Bypass -File .\install.ps1 -ProjectPath "C:\path\to\project"</code></pre>
-        </article>
+        <div class="feature-list">
+          <article class="feature reveal-item">
+            <div class="feature__copy">
+              <p class="feature__label">ランダム投稿</p>
+              <h3>同じ時間、同じ順番を避ける。</h3>
+              <p>投稿文と画像をプール化し、重複を避けながら自然な間隔で配信します。</p>
+            </div>
+            <img src="assets/images/random_flow.png" alt="定期投稿とランダム投稿の比較" width="1896" height="830" loading="lazy">
+          </article>
+          <article class="feature reveal-item">
+            <div class="feature__copy">
+              <p class="feature__label">プロキシ</p>
+              <h3>アカウントごとにIPを分ける。</h3>
+              <p>IPRoyalなどの情報を貼るだけ。複数アカウント運用の守りを作れます。</p>
+            </div>
+            <img src="assets/images/proxy_protection.png" alt="アカウント別プロキシによる連鎖凍結防止" width="1672" height="941" loading="lazy">
+          </article>
+          <article class="feature reveal-item">
+            <div class="feature__copy">
+              <p class="feature__label">コミュニティ投稿</p>
+              <h3>濃いユーザーが集まる場所へ投稿する。</h3>
+              <p>タイムラインを汚さず、狙ったコミュニティだけへ自然に配信できます。</p>
+            </div>
+            <img src="assets/images/community_branch.png" alt="コミュニティ投稿の配信先選択" width="1895" height="830" loading="lazy">
+          </article>
+          <article class="feature reveal-item">
+            <div class="feature__copy">
+              <p class="feature__label">自動DM</p>
+              <h3>受信から返信までを短くする。</h3>
+              <p>DM受信、承認、テンプレ返信をシンプルな流れで自動化できます。</p>
+            </div>
+            <img src="assets/images/auto_dm_flow.png" alt="自動DM返信の流れ" width="1894" height="830" loading="lazy">
+          </article>
+          <article class="feature reveal-item">
+            <div class="feature__copy">
+              <p class="feature__label">Amazon在庫復活</p>
+              <h3>在庫復活を検知して、すぐXへ投稿。</h3>
+              <p>Keepa連携で商品を監視し、復活したタイミングを逃さず投稿できます。</p>
+            </div>
+            <img src="assets/images/amazon_flow.png" alt="Amazon在庫復活アラートの流れ" width="1831" height="859" loading="lazy">
+          </article>
+        </div>
       </div>
+    </section>
 
-      <ol class="steps">
-        <li><span>1</span> `ProjectPath` には Claude Code を開きたいプロジェクトフォルダを指定します。</li>
-        <li><span>2</span> 初回だけ Claude Code の `Yes, I trust this folder` を承認します。</li>
-        <li><span>3</span> 以後は `Ctrl+D`、`Ctrl+E` から直接 Claude Code を起動できます。`claude` / `cc` では `Ctrl+T` も Windows Terminal の新規タブに割り当てます。</li>
-        <li><span>4</span> `-LaunchCommand ccnest` の場合、`Ctrl+T` は ccnest 内の新規タブ作成に残します。</li>
-      </ol>
+    <section class="section section--paper" id="pricing">
+      <div class="wrap">
+        <div class="section__head section__head--center">
+          <p class="eyebrow">Pricing</p>
+          <h2>月額なし。買い切りで始める。</h2>
+          <p>まず無料版で試し、必要になった機能だけ追加できます。</p>
+        </div>
+
+        <div class="plans">
+          <article class="plan reveal-item">
+            <p class="plan__name">無料版</p>
+            <p class="plan__price">¥0<span>永続</span></p>
+            <ul>
+              <li>定期投稿</li>
+              <li>1アカウント</li>
+              <li>期間制限なし</li>
+            </ul>
+            <a class="button button--secondary button--block" href="https://note.com/youpapalife/n/n2b0ec123439d">無料で試す</a>
+          </article>
+          <article class="plan plan--featured reveal-item">
+            <p class="plan__badge">おすすめ</p>
+            <p class="plan__name">買い切り + アドオン</p>
+            <p class="plan__price">¥2,980<span>から</span></p>
+            <ul>
+              <li>基本機能を無制限</li>
+              <li>アドオン1つ同梱</li>
+              <li>AIクレジット1,000pt</li>
+            </ul>
+            <a class="button button--primary button--block" href="https://page.theapps.jp/charge/join/E8hv3G40M25k43r2">購入する</a>
+          </article>
+          <article class="plan reveal-item">
+            <p class="plan__name">フル買切り</p>
+            <p class="plan__price">¥19,800<span>一括</span></p>
+            <ul>
+              <li>全5アドオン込み</li>
+              <li>単品合計より¥3,200お得</li>
+              <li>新機能をすぐ利用</li>
+            </ul>
+            <a class="button button--dark button--block" href="https://page.theapps.jp/charge/join/D8hv3G40M25k48c3">フル装備で買う</a>
+          </article>
+        </div>
+      </div>
     </section>
 
     <section class="section">
-      <div class="section__head">
-        <p class="eyebrow">What It Changes</p>
-        <h2>追加されるショートカット</h2>
-      </div>
-      <div class="shortcut-table" role="table" aria-label="追加される Windows Terminal ショートカット">
-        <div role="row" class="shortcut-table__row shortcut-table__row--head">
-          <span role="columnheader">キー</span>
-          <span role="columnheader">動作</span>
-          <span role="columnheader">起動先</span>
+      <div class="wrap narrow">
+        <div class="section__head section__head--center">
+          <p class="eyebrow">Notes</p>
+          <h2>購入前に知っておきたいこと。</h2>
         </div>
-        <div role="row" class="shortcut-table__row">
-          <span role="cell"><kbd>Ctrl</kbd> + <kbd>D</kbd></span>
-          <span role="cell">右ペインで Claude Code</span>
-          <span role="cell">指定した `ProjectPath`</span>
-        </div>
-        <div role="row" class="shortcut-table__row">
-          <span role="cell"><kbd>Ctrl</kbd> + <kbd>E</kbd></span>
-          <span role="cell">下ペインで Claude Code</span>
-          <span role="cell">指定した `ProjectPath`</span>
-        </div>
-        <div role="row" class="shortcut-table__row">
-          <span role="cell"><kbd>Ctrl</kbd> + <kbd>T</kbd></span>
-          <span role="cell">`claude` / `cc` は新規 Terminal タブ。`ccnest` は内部タブ。</span>
-          <span role="cell">`ccnest` では Terminal 側に登録しない</span>
+        <div class="notes">
+          <p>Windows専用です。Mac / Linuxには対応していません。</p>
+          <p>プロキシを使う場合、別途プロキシサービスの契約が必要です。</p>
+          <p>24時間運用したい場合は、PCを起動したままにするかVPSをご利用ください。</p>
         </div>
       </div>
     </section>
 
-    <section id="publish" class="section section--split">
-      <div>
-        <p class="eyebrow">Publish</p>
-        <h2>GitHub Pages で公開する</h2>
-        <p>
-          このサイトは `docs/index.html` を入口にした静的サイトです。
-          GitHub の Settings から Pages を有効にし、Source を `Deploy from a branch`、
-          Branch を `main`、Folder を `/docs` に設定します。
-        </p>
-      </div>
-      <div class="checklist" aria-label="公開チェックリスト">
-        <p><strong>公開前チェック</strong></p>
-        <ul>
-          <li>`OWNER/REPO` を実際のリポジトリ名に置き換える</li>
-          <li>`install.ps1` の内容をレビューできるようにしておく</li>
-          <li>README からこのドキュメントサイトへリンクする</li>
-          <li>利用者に初回 trust 承認が必要なことを明記する</li>
-        </ul>
-      </div>
-    </section>
-
-    <section id="safety" class="section section--tinted">
-      <div class="section__head">
-        <p class="eyebrow">Safety</p>
-        <h2>配布時の安全ルール</h2>
-        <p>
-          `~/.claude.json` や Claude の認証情報は配布しません。
-          `--dangerously-skip-permissions` は確認画面だけでなく権限確認も緩めるため、標準手順には入れません。
-        </p>
-      </div>
-      <div class="rule-grid">
-        <article class="rule">
-          <h3>配るもの</h3>
-          <p>`install.ps1`、`docs/`、README、LICENSE。</p>
-        </article>
-        <article class="rule">
-          <h3>配らないもの</h3>
-          <p>`~/.claude.json`、個人の Windows Terminal 設定全体、API キー。</p>
-        </article>
-        <article class="rule">
-          <h3>利用者が行うこと</h3>
-          <p>自分の `ProjectPath` を指定し、初回だけ trust ダイアログを承認します。</p>
-        </article>
+    <section class="section section--paper" id="faq">
+      <div class="wrap narrow">
+        <div class="section__head section__head--center">
+          <p class="eyebrow">FAQ</p>
+          <h2>よくある質問。</h2>
+        </div>
+        <details class="faq-item">
+          <summary>APIキーは必要ですか？</summary>
+          <p>不要です。XのIDとパスワードを登録して、ブラウザ操作を自動化します。</p>
+        </details>
+        <details class="faq-item">
+          <summary>何アカウントまで使えますか？</summary>
+          <p>有料版は登録数の制限なしです。同時運用数はPCスペックに左右されます。</p>
+        </details>
+        <details class="faq-item">
+          <summary>無料版から有料版へ移行できますか？</summary>
+          <p>できます。無料版で試してから、必要な機能に合わせて買い切りプランを選べます。</p>
+        </details>
       </div>
     </section>
 
-    <section id="troubleshooting" class="section">
-      <div class="section__head">
-        <p class="eyebrow">Troubleshooting</p>
-        <h2>よくある詰まりどころ</h2>
+    <section class="final-cta">
+      <div class="wrap final-cta__inner">
+        <h2>X運用の手作業を、今日減らす。</h2>
+        <p>長いnoteLPを読まなくても、まず無料版で操作感を確認できます。</p>
+        <div class="hero__actions" aria-label="最終アクション">
+          <a class="button button--primary" href="https://page.theapps.jp/charge/join/E8hv3G40M25k43r2">¥2,980から始める</a>
+          <a class="button button--secondary" href="https://note.com/youpapalife/n/n2b0ec123439d">無料版を見る</a>
+        </div>
       </div>
-      <details>
-        <summary>まだ trust 画面が出る</summary>
-        <p>`ProjectPath` が実際に開きたいフォルダと一致しているか確認します。別パス表記のフォルダは Claude Code 側で別ワークスペースとして扱われることがあります。</p>
-      </details>
-      <details>
-        <summary>`claude` が見つからない</summary>
-        <p>Claude Code をインストールし、通常の Windows Terminal で `claude --version` が動くことを確認します。`cc` を使いたい場合は `-LaunchCommand cc`、ccnest を使いたい場合は `-LaunchCommand ccnest` を指定できます。</p>
-      </details>
-      <details>
-        <summary>ccnest の `Ctrl+T` が Terminal の新規タブになる</summary>
-        <p>`-LaunchCommand ccnest` で再実行すると、Windows Terminal 側の `Ctrl+T` 登録を外し、ccnest 内の新規タブ作成にキー入力を渡します。</p>
-      </details>
-      <details>
-        <summary>ショートカットが別用途と衝突する</summary>
-        <p>`install.ps1` は対象キーを上書きします。既存設定は `.bak-日時` としてバックアップされるため、必要に応じて復元できます。</p>
-      </details>
     </section>
   </main>
 
   <footer class="site-footer">
-    <div>
+    <div class="wrap footer__grid">
+      <div>
+        <strong>XToolsPro3</strong>
+        <p>GitHub Pagesで公開できる静的LPです。</p>
+      </div>
+      <nav aria-label="フッターリンク">
+        <a href="https://forms.gle/sDG46hdxTo9E4p4CA">お問い合わせ</a>
+        <a href="https://xtools-docs-auth.web.app/">購入後手順書</a>
+      </nav>
+    </div>
+    <div class="wrap version-history">
       <strong>Version History</strong>
-      <p>ver0.1 - 2026-04-25 - GitHub 配布向けドキュメントサイトの初版を追加。</p>
-      <p>ver0.2 - 2026-04-25 - ccnest 利用時は Ctrl+T を内部タブ作成に残す説明を追加。</p>
+      <p>ver1.0 - 2026-05-06 - ObsidianのXToolsPro3 noteLPをもとに、短く分かりやすいGitHub Pages向けHTML/CSS LPへ再構成。</p>
+      <p>ver1.1 - 2026-05-06 - 機能説明を画像より先に表示し、GPT Images 2生成のPNG図解へ差し替え。</p>
+      <p>ver1.2 - 2026-05-06 - 下部3機能もフル幅表示に統一し、自動DMとAmazon在庫復活の図解を簡潔化。</p>
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js" defer></script>
   <!-- Version History
-       ver0.1 - 2026-04-25 - GitHub 配布向けドキュメントサイトの初版を追加。
-       ver0.2 - 2026-04-25 - ccnest 利用時は Ctrl+T を内部タブ作成に残す説明を追加。 -->
+       ver1.0 - 2026-05-06 - Rebuilt the public page as a concise XToolsPro3 rich landing page for GitHub Pages.
+       ver1.1 - 2026-05-06 - Moved feature copy above images and switched visuals to GPT Images 2 PNG diagrams.
+       ver1.2 - 2026-05-06 - Expanded all feature visuals to full-width blocks and simplified auto DM and Amazon diagrams. -->
 </body>
 </html>

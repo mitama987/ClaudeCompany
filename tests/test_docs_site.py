@@ -57,6 +57,13 @@ class DocumentationSiteTests(unittest.TestCase):
             "目安100アカウント",
             "10アカウント程度",
             "投稿時刻をずらす",
+            "Macでも使えますか？",
+            "必要なPCスペックは？",
+            "プロキシには別途費用がかかりますか？",
+            "アドオンは後から追加できますか？",
+            "Windows 10",
+            "月額500〜800円",
+            "お問い合わせフォーム",
             "無料版",
             "¥2,980",
             "¥19,800",
@@ -103,7 +110,7 @@ class DocumentationSiteTests(unittest.TestCase):
         visible_text = re.sub(r"<[^>]+>", "", visible_text)
         visible_text = re.sub(r"\s+", "", visible_text)
 
-        self.assertLess(len(visible_text), 7200)
+        self.assertLess(len(visible_text), 8000)
         self.assertIn('src="assets/images/feature_map.png"', html)
         self.assertIn('src="assets/images/random_flow.png"', html)
         self.assertIn('src="assets/images/proxy_protection.png"', html)
@@ -160,6 +167,31 @@ class DocumentationSiteTests(unittest.TestCase):
             ".trust-panel",
         ]:
             self.assertIn(selector, css)
+
+    def test_reference_faq_is_added_without_touching_minimal_variant(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        minimal = (ROOT / "docs/index-minimal.html").read_text(encoding="utf-8")
+
+        faq_order = [
+            "APIキーは必要ですか？",
+            "Macでも使えますか？",
+            "何アカウントまで使えますか？",
+            "必要なPCスペックは？",
+            "プロキシには別途費用がかかりますか？",
+            "無料版から有料版へ移行できますか？",
+            "アドオンは後から追加できますか？",
+        ]
+        positions = [html.index(text) for text in faq_order]
+        self.assertEqual(positions, sorted(positions))
+        self.assertGreaterEqual(html.count('<details class="faq-item">'), 7)
+        self.assertIn('class="faq-more"', html)
+        self.assertIn("Mac / Linuxには対応していません", html)
+        self.assertIn("メモリ4GB", html)
+        self.assertIn("目安100アカウント", html)
+        self.assertIn("¥3,200お得", html)
+
+        self.assertNotIn("プロキシには別途費用がかかりますか？", minimal)
+        self.assertNotIn("アドオンは後から追加できますか？", minimal)
 
     def test_feature_copy_appears_before_feature_images(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
@@ -323,3 +355,4 @@ if __name__ == "__main__":
 # ver0.10 - 2026-05-06 - Added checks for fixed two-line hero headline and clearer account limit FAQ copy.
 # ver0.11 - 2026-05-06 - Added checks for concise reference-inspired sections, add-ons, and plan comparison.
 # ver0.12 - 2026-05-06 - Added checks for richer visual structure in reference-inspired sections.
+# ver0.13 - 2026-05-06 - Added checks for expanded reference FAQ and preserved minimal variant.

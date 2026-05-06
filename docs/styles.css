@@ -367,7 +367,8 @@ p {
 .addon-item,
 .trust-item,
 .notes,
-.faq-item {
+.faq-item,
+.faq-more {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--paper);
@@ -400,7 +401,8 @@ p {
 .trust-item p,
 .plan li,
 .notes p,
-.faq-item p {
+.faq-item p,
+.faq-more {
   margin-bottom: 0;
 }
 
@@ -798,6 +800,20 @@ p {
   padding: 0 0 18px;
 }
 
+.faq-more {
+  margin-top: 18px;
+  padding: 18px 20px;
+  border-left: 4px solid var(--accent);
+  color: var(--muted);
+}
+
+.faq-more a {
+  color: var(--accent-dark);
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .final-cta {
   padding: 86px 0;
   background: var(--ink);
@@ -967,4 +983,5 @@ p {
    ver1.2 - 2026-05-06 - Removed compact three-card feature layout so every feature visual can render at full width.
    ver1.3 - 2026-05-06 - Added fixed block spans for the two-line hero headline.
    ver1.4 - 2026-05-06 - Added compact section styles for reasons, basic plan, add-ons, comparison table, and trust blocks.
-   ver1.5 - 2026-05-06 - Enriched added sections with stronger card hierarchy, CTAs, comparison highlighting, and trust panel. */
+   ver1.5 - 2026-05-06 - Enriched added sections with stronger card hierarchy, CTAs, comparison highlighting, and trust panel.
+   ver1.6 - 2026-05-06 - Added contact-note styling for the expanded FAQ block. */

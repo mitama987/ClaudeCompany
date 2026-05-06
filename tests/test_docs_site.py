@@ -49,6 +49,11 @@ class DocumentationSiteTests(unittest.TestCase):
             "信頼材料",
             "AI生成パック",
             "マルチアカウントパック",
+            "こんな人に",
+            "アドオンで広がる",
+            "まずは基本版で十分",
+            "開発・運用の背景",
+            "迷ったら買い切り + アドオン",
             "目安100アカウント",
             "10アカウント程度",
             "投稿時刻をずらす",
@@ -125,6 +130,36 @@ class DocumentationSiteTests(unittest.TestCase):
         self.assertEqual(positions, sorted(positions))
         self.assertIn('class="compare-table"', html)
         self.assertIn('class="addon-grid"', html)
+        self.assertIn('class="reason-card', html)
+        self.assertIn('class="basic-panel', html)
+        self.assertIn('class="addon-item__action"', html)
+        self.assertIn('class="compare-table__highlight"', html)
+        self.assertIn('class="trust-panel', html)
+
+    def test_reference_sections_have_richer_visual_structure(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        css = (ROOT / "docs/styles.css").read_text(encoding="utf-8")
+
+        rich_classes = [
+            "reason-card__meta",
+            "basic-panel__main",
+            "basic-panel__aside",
+            "addon-item__best",
+            "compare-note",
+            "trust-story",
+            "trust-proofline",
+        ]
+        for class_name in rich_classes:
+            self.assertIn(class_name, html)
+
+        for selector in [
+            ".reason-card::before",
+            ".basic-panel",
+            ".addon-item__action",
+            ".compare-table__highlight",
+            ".trust-panel",
+        ]:
+            self.assertIn(selector, css)
 
     def test_feature_copy_appears_before_feature_images(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
@@ -287,3 +322,4 @@ if __name__ == "__main__":
 # ver0.9 - 2026-05-06 - Required every feature item to use the full-width copy-first feature layout.
 # ver0.10 - 2026-05-06 - Added checks for fixed two-line hero headline and clearer account limit FAQ copy.
 # ver0.11 - 2026-05-06 - Added checks for concise reference-inspired sections, add-ons, and plan comparison.
+# ver0.12 - 2026-05-06 - Added checks for richer visual structure in reference-inspired sections.

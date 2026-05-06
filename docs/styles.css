@@ -81,6 +81,12 @@ h3 {
   line-height: 1.35;
 }
 
+h4 {
+  margin: 0 0 8px;
+  font-size: 17px;
+  line-height: 1.35;
+}
+
 p {
   color: var(--muted);
 }
@@ -406,6 +412,45 @@ p {
   font-weight: 900;
 }
 
+.reason-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 236px;
+}
+
+.reason-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 5px;
+  background: var(--accent);
+}
+
+.reason-card__meta,
+.basic-panel__label,
+.addon-item__best {
+  margin-bottom: 10px;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.reason-card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.reason-card__footer span {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: var(--paper-soft);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .feature-list {
   display: grid;
   gap: 28px;
@@ -511,13 +556,106 @@ p {
   transform: rotate(-45deg);
 }
 
-.basic-grid,
-.addon-grid {
+.basic-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.7fr);
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.basic-panel__main,
+.basic-panel__aside {
+  padding: 28px;
+}
+
+.basic-panel__main > p {
+  max-width: 680px;
+}
+
+.basic-panel__aside {
+  display: flex;
+  flex-direction: column;
+  background: var(--green);
+  color: #fff;
+}
+
+.basic-panel__aside p,
+.basic-panel__aside li,
+.basic-panel__aside .basic-panel__label {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.basic-panel__aside ul {
+  flex: 1;
+  display: grid;
+  gap: 12px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+
+.basic-panel__aside li {
+  padding-left: 18px;
+  border-left: 3px solid rgba(255, 255, 255, 0.34);
+}
+
+.basic-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.basic-panel .basic-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 20px;
+}
+
+.basic-item {
+  background: var(--paper-soft);
+  box-shadow: none;
+}
+
+.basic-item span {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 900;
 }
 
 .addon-grid {
   grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.addon-item {
+  display: flex;
+  flex-direction: column;
+  min-height: 288px;
+}
+
+.addon-item--featured {
+  border: 2px solid var(--green);
+}
+
+.addon-item__best {
+  color: var(--green);
+}
+
+.addon-item__action {
+  margin-top: auto;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: var(--ink);
+  color: #fff;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.addon-item__action:hover {
+  background: var(--accent-dark);
 }
 
 .table-wrap {
@@ -532,6 +670,15 @@ p {
   width: 100%;
   min-width: 760px;
   border-collapse: collapse;
+}
+
+.compare-note {
+  caption-side: top;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  text-align: left;
+  font-weight: 900;
 }
 
 .compare-table th,
@@ -556,9 +703,37 @@ p {
   color: var(--muted);
 }
 
+.compare-table__highlight {
+  background: rgba(222, 93, 42, 0.1);
+  color: var(--ink) !important;
+  font-weight: 900;
+}
+
 .compare-table tr:last-child th,
 .compare-table tr:last-child td {
   border-bottom: 0;
+}
+
+.trust-panel {
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.trust-story {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.6fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 22px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.trust-story h3 {
+  margin-bottom: 0;
 }
 
 .trust-item strong {
@@ -567,6 +742,15 @@ p {
   color: var(--ink);
   font-size: 30px;
   line-height: 1;
+}
+
+.trust-proofline {
+  margin: 20px 0 0;
+  padding: 14px 16px;
+  border-left: 4px solid var(--accent);
+  background: var(--paper-soft);
+  color: var(--ink);
+  font-weight: 800;
 }
 
 .notes {
@@ -705,10 +889,13 @@ p {
 
   .hero__grid,
   .feature,
+  .basic-panel,
+  .trust-story,
   .problem-grid,
   .reason-grid,
   .plans,
   .basic-grid,
+  .basic-panel .basic-grid,
   .addon-grid,
   .trust-grid {
     grid-template-columns: 1fr;
@@ -779,4 +966,5 @@ p {
    ver1.1 - 2026-05-06 - Changed feature sections to copy-first cards and adjusted image spacing for richer diagrams.
    ver1.2 - 2026-05-06 - Removed compact three-card feature layout so every feature visual can render at full width.
    ver1.3 - 2026-05-06 - Added fixed block spans for the two-line hero headline.
-   ver1.4 - 2026-05-06 - Added compact section styles for reasons, basic plan, add-ons, comparison table, and trust blocks. */
+   ver1.4 - 2026-05-06 - Added compact section styles for reasons, basic plan, add-ons, comparison table, and trust blocks.
+   ver1.5 - 2026-05-06 - Enriched added sections with stronger card hierarchy, CTAs, comparison highlighting, and trust panel. */

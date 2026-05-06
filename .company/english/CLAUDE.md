@@ -16,9 +16,13 @@
 │   ├── NN-xxx.en.md     ← 英語のみ（TTS入力。口語＋少しフォーマル、ブロックマーカー付き）
 │   └── NN-xxx.bi.md     ← 1文ごと英→日のバイリンガル（読解・シャドーイング用、ブロック見出し付き）
 ├── audio/               ← 生成 mp3（gitignore済み）
-│   ├── NN-xxx.mp3       ← フル音声
-│   └── NN-xxx/          ← ブロック分割
-│       └── bMM-slug.mp3
+│   ├── NN-xxx.mp3            ← フル音声 1.0x
+│   ├── NN-xxx_0.75x.mp3       ← フル音声 0.75x
+│   ├── NN-xxx_0.5x.mp3        ← フル音声 0.5x
+│   └── NN-xxx/                ← ブロック分割
+│       ├── bMM-slug.mp3       ← 1.0x
+│       ├── bMM-slug_0.75x.mp3 ← 0.75x
+│       └── bMM-slug_0.5x.mp3  ← 0.5x
 └── routine/             ← 日々の練習ログ（YYYY-MM-DD.md）
 ```
 
@@ -128,11 +132,12 @@ I was born in 1989 ...
 ```
 
 ## TTS仕様
-- model: `gpt-4o-mini-tts` または `tts-1`
+- model: `gpt-4o-mini-tts`
 - voice: `alloy` 固定
-- speed: `1.0` 固定
+- speeds: `1.0` / `0.75` / `0.5` の3種類を毎回生成（`SPEEDS` タプルで管理）
 - format: `mp3`
 - 既存ファイルは skip、`--force` で上書き
+- ファイル名: 1.0x はサフィックスなし、それ以外は `_0.75x` / `_0.5x` を末尾に付与
 
 ## ルール
 - 同じ日付の `routine/` ファイルは追記、新規作成しない

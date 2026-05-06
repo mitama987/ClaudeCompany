@@ -1,10 +1,14 @@
 """英語学習プロジェクト用 OpenAI TTS ラッパー.
 
 入力:  .company/english/scripts/NN-xxx.en.md
-出力:  .company/english/audio/NN-xxx.mp3              (フル音声)
-       .company/english/audio/NN-xxx/bMM-slug.mp3      (ブロック分割)
+出力:  .company/english/audio/NN-xxx.mp3              (フル音声 1.0x)
+       .company/english/audio/NN-xxx_0.75x.mp3
+       .company/english/audio/NN-xxx_0.5x.mp3
+       .company/english/audio/NN-xxx/bMM-slug.mp3      (ブロック分割 1.0x)
+       .company/english/audio/NN-xxx/bMM-slug_0.75x.mp3
+       .company/english/audio/NN-xxx/bMM-slug_0.5x.mp3
 
-声・速度はプロジェクト方針で固定 (alloy / 1.0).
+声 alloy 固定。速度は SPEEDS タプル (1.0, 0.75, 0.5) を全部生成する.
 
 ブロック分割:
     .en.md 内に `<!-- BLOCK 01: Title -->` のマーカーを置くと、
@@ -35,7 +39,7 @@ SCRIPTS_DIR = ROOT / ".company" / "english" / "scripts"
 AUDIO_DIR = ROOT / ".company" / "english" / "audio"
 
 VOICE = "alloy"
-SPEED = 1.0
+SPEEDS: tuple[float, ...] = (1.0, 0.75, 0.5)
 MODEL = "gpt-4o-mini-tts"
 RESPONSE_FORMAT = "mp3"
 
@@ -86,34 +90,52 @@ def parse_blocks(body: str) -> list[tuple[int, str, str]]:
     return blocks
 
 
-def synthesize(client: OpenAI, text: str, out_path: Path) -> None:
+def speed_suffix(speed: float) -> str:
+    if speed == 1.0:
+        return ""
+    return f"_{speed:g}x"
+
+
+def synthesize(client: OpenAI, text: str, out_path: Path, speed: float) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with client.audio.speech.with_streaming_response.create(
         model=MODEL,
         voice=VOICE,
-        speed=SPEED,
+        speed=speed,
         response_format=RESPONSE_FORMAT,
         input=text,
     ) as response:
         response.stream_to_file(out_path)
 
 
+def emit_at_speeds(
+    text: str,
+    parent: Path,
+    stem: str,
+    label: str,
+    client: OpenAI,
+    force: bool,
+) -> None:
+    if not text:
+        print(f"[warn] {label} のテキストが空です")
+        return
+    for speed in SPEEDS:
+        out_path = parent / f"{stem}{speed_suffix(speed)}.mp3"
+        if out_path.exists() and not force:
+            print(f"[skip] {out_path.relative_to(ROOT)} (exists)")
+            continue
+        print(f"[tts ] {label} @{speed:g}x -> {out_path.relative_to(ROOT)} ({len(text)} chars)")
+        synthesize(client, text, out_path, speed)
+        print(f"[done] {out_path.relative_to(ROOT)}")
+
+
 def process(md_path: Path, client: OpenAI, force: bool) -> None:
     post = frontmatter.load(md_path)
     body = post.content
-
     base = md_path.name.removesuffix(".en.md")
 
     full_text = clean_for_speech(body)
-    full_out = AUDIO_DIR / f"{base}.mp3"
-    if not full_text:
-        print(f"[warn] {md_path.relative_to(ROOT)} に音声化対象テキストがありません")
-    elif full_out.exists() and not force:
-        print(f"[skip] {full_out.relative_to(ROOT)} (exists, use --force)")
-    else:
-        print(f"[tts ] full {md_path.relative_to(ROOT)} -> {full_out.relative_to(ROOT)} ({len(full_text)} chars)")
-        synthesize(client, full_text, full_out)
-        print(f"[done] {full_out.relative_to(ROOT)}")
+    emit_at_speeds(full_text, AUDIO_DIR, base, f"full {base}", client, force)
 
     blocks = parse_blocks(body)
     if not blocks:
@@ -122,17 +144,9 @@ def process(md_path: Path, client: OpenAI, force: bool) -> None:
     block_dir = AUDIO_DIR / base
     for num, title, raw_block in blocks:
         block_text = clean_for_speech(raw_block)
-        if not block_text:
-            print(f"[warn] block {num:02d} ({title}) のテキストが空です")
-            continue
         slug = slugify(title)
-        block_out = block_dir / f"b{num:02d}-{slug}.mp3"
-        if block_out.exists() and not force:
-            print(f"[skip] {block_out.relative_to(ROOT)} (exists)")
-            continue
-        print(f"[tts ] b{num:02d} {title} -> {block_out.relative_to(ROOT)} ({len(block_text)} chars)")
-        synthesize(client, block_text, block_out)
-        print(f"[done] {block_out.relative_to(ROOT)}")
+        stem = f"b{num:02d}-{slug}"
+        emit_at_speeds(block_text, block_dir, stem, f"b{num:02d} {title}", client, force)
 
 
 def main() -> int:

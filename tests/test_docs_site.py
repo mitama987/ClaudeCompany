@@ -156,7 +156,7 @@ class DocumentationSiteTests(unittest.TestCase):
         self.assertIn('src="assets/images/community_branch.png"', html)
         self.assertIn('src="assets/images/auto_dm_flow.png"', html)
         self.assertIn('src="assets/images/amazon_flow.png"', html)
-        self.assertIn('src="assets/images/plan_compare.png"', html)
+        self.assertNotIn('src="assets/images/plan_compare.png"', html)
         self.assertIn('src="assets/images/developer_portrait.webp"', html)
         self.assertIn('src="assets/images/addons/addons_ai.webp"', html)
         self.assertIn('src="assets/images/reviews/review_01.png"', html)
@@ -179,6 +179,7 @@ class DocumentationSiteTests(unittest.TestCase):
         positions = [html.index(text) for text in expected_order]
         self.assertEqual(positions, sorted(positions))
         self.assertIn('class="compare-visual', html)
+        self.assertIn('class="compare-table', html)
         self.assertIn('class="addon-grid"', html)
         self.assertIn('class="basic-panel', html)
         self.assertIn('class="addon-detail"', html)
@@ -186,7 +187,6 @@ class DocumentationSiteTests(unittest.TestCase):
         self.assertIn('class="developer-panel', html)
         self.assertNotIn('class="basic-panel__aside"', html)
         self.assertNotIn('class="addon-item__action"', html)
-        self.assertNotIn('class="compare-table"', html)
 
     def test_reference_sections_have_richer_visual_structure(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
@@ -198,8 +198,9 @@ class DocumentationSiteTests(unittest.TestCase):
             "addon-item__image",
             "addon-item__best",
             "addon-detail__list",
-            "compare-image",
+            "compare-table",
             "review-card",
+            "review-card__scroll",
             "developer-copy",
             "developer-proof",
         ]
@@ -212,12 +213,17 @@ class DocumentationSiteTests(unittest.TestCase):
             ".addon-item__image",
             ".addon-detail",
             ".compare-visual",
+            ".compare-table",
             ".review-grid",
+            ".review-card__scroll",
             ".developer-panel",
             ".developer-timeline",
             ".faq-emphasis",
         ]:
             self.assertIn(selector, css)
+
+        self.assertRegex(css, r"\.addon-grid\s*\{[\s\S]*grid-template-columns:\s*repeat\(3,")
+        self.assertRegex(css, r"\.review-grid\s*\{[\s\S]*grid-template-columns:\s*1fr;")
 
     def test_developer_profile_uses_portrait_and_mobile_timeline(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
@@ -246,22 +252,45 @@ class DocumentationSiteTests(unittest.TestCase):
         )
         self.assertNotRegex(css, r"\.developer-visual\s*\{[^}]*display:\s*none;")
 
-    def test_addons_use_toggles_and_compare_is_an_image(self):
+    def test_addons_use_toggles_and_compare_is_a_html_table(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
 
         self.assertEqual(html.count('<details class="addon-detail">'), 5)
         self.assertEqual(html.count("含まれるものを見る"), 5)
+        self.assertEqual(html.count('data-price-free="true"'), 5)
         self.assertIn("投稿案生成・文章の言い換え", html)
         self.assertIn("自動いいね・自動フォロー・自動リプライ", html)
         self.assertIn("アカウント別プロキシ", html)
         self.assertIn("指定コミュニティへの自動投稿", html)
         self.assertIn("Keepa連携による在庫監視", html)
-        self.assertIn('class="compare-image"', html)
-        self.assertIn('alt="無料版、買い切り、フル買切りの3プラン比較表"', html)
-        self.assertIn('width="1800" height="1080"', html)
-        self.assertIn("比較表を画像化しています", html)
-        self.assertEqual(self.png_dimensions(ROOT / "docs/assets/images/plan_compare.png"), (1800, 1080))
-        self.assertNotIn("<table", html)
+        self.assertIn('<table class="compare-table"', html)
+        self.assertIn("比較項目", html)
+        self.assertIn("予約投稿", html)
+        self.assertIn("新機能の即時利用", html)
+        self.assertIn("全5種同梱", html)
+        self.assertIn('scope="col"', html)
+        self.assertNotIn('class="compare-image"', html)
+        self.assertNotIn("比較表を画像化しています", html)
+
+        for image_name in [
+            "addons_ai.webp",
+            "addons_engagement.webp",
+            "addons_multi.webp",
+            "addons_community.webp",
+            "addons_amazon.webp",
+        ]:
+            with self.subTest(image_name=image_name):
+                self.assertGreater((ROOT / "docs" / "assets" / "images" / "addons" / image_name).stat().st_size, 45_000)
+
+    def test_reviews_are_large_and_scrollable_for_readability(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        css = (ROOT / "docs/styles.css").read_text(encoding="utf-8")
+
+        self.assertEqual(html.count('class="review-card__scroll"'), 4)
+        self.assertIn('aria-label="お客様の声 1を拡大表示"', html)
+        self.assertRegex(css, r"\.review-grid\s*\{[\s\S]*max-width:\s*980px;")
+        self.assertRegex(css, r"\.review-card img\s*\{[\s\S]*width:\s*100%;")
+        self.assertRegex(css, r"@media\s*\(max-width:\s*640px\)\s*\{[\s\S]*\.review-card img\s*\{[\s\S]*width:\s*760px;")
 
     def test_reference_faq_is_added_without_touching_minimal_variant(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
@@ -466,3 +495,4 @@ if __name__ == "__main__":
 # ver0.16 - 2026-05-06 - Added checks for mobile developer profile timeline fallback.
 # ver0.17 - 2026-05-08 - Added checks for reference pricing/add-ons/reviews, portrait developer image, emphasized FAQ, and floating launch grip.
 # ver0.18 - 2026-05-08 - Required a local favicon so the published page avoids browser favicon 404s.
+# ver0.19 - 2026-05-08 - Required 3-column add-ons, price-free regenerated add-on images, HTML comparison table, and larger readable reviews.

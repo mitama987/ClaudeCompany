@@ -93,7 +93,6 @@ class DocumentationSiteTests(unittest.TestCase):
             "無料版",
             "¥2,980",
             "¥19,800",
-            "launch-grip",
             "faq-emphasis",
         ]
         for phrase in required_phrases:
@@ -150,11 +149,15 @@ class DocumentationSiteTests(unittest.TestCase):
 
         self.assertIn(">無料版を試す</a>", html)
         self.assertNotIn(">無料版</a>", html)
-        self.assertIn('href="styles.css?v=20260509-footer"', html)
+        self.assertIn('href="styles.css?v=20260509-no-float"', html)
         self.assertNotIn('href="index-minimal.html">ミニマム版</a>', html)
+        self.assertNotIn('class="launch-grip"', html)
+        self.assertNotIn('class="launch-grip__cta"', html)
+        self.assertNotIn('aria-label="固定クイック移動"', html)
 
         featured_rule = re.search(r"\.addon-item--featured\s*\{(?P<body>[\s\S]*?)\}", css)
         self.assertIsNone(featured_rule)
+        self.assertNotIn(".launch-grip", css)
 
     def test_minimum_landing_page_variant_is_preserved(self):
         minimal = (ROOT / "docs/index-minimal.html").read_text(encoding="utf-8")
@@ -224,7 +227,6 @@ class DocumentationSiteTests(unittest.TestCase):
         css = (ROOT / "docs/styles.css").read_text(encoding="utf-8")
 
         rich_classes = [
-            "launch-grip__cta",
             "basic-panel__main",
             "addon-item__image",
             "addon-item__best",
@@ -239,7 +241,6 @@ class DocumentationSiteTests(unittest.TestCase):
             self.assertIn(class_name, html)
 
         for selector in [
-            ".launch-grip",
             ".basic-panel",
             ".addon-item__image",
             ".addon-detail",
@@ -542,3 +543,4 @@ if __name__ == "__main__":
 # ver0.22 - 2026-05-09 - Required footer support links, updated header trial CTA, and consistent add-on card borders.
 # ver0.23 - 2026-05-09 - Required a stylesheet cache-busting version for the footer and add-on border release.
 # ver0.24 - 2026-05-09 - Required the minimal landing page link to be hidden from the main page header.
+# ver0.25 - 2026-05-09 - Required the floating quick navigation to be removed from the main page.

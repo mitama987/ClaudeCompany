@@ -117,49 +117,6 @@ p {
   transform: translateY(0);
 }
 
-.launch-grip {
-  position: fixed;
-  right: 18px;
-  bottom: 18px;
-  z-index: 60;
-  display: flex;
-  gap: 6px;
-  padding: 8px;
-  border: 1px solid rgba(223, 215, 200, 0.92);
-  border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(10px);
-}
-
-.launch-grip a {
-  min-height: 38px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 12px;
-  border-radius: 6px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.launch-grip a:hover,
-.launch-grip a:focus-visible {
-  background: var(--paper-soft);
-  color: var(--ink);
-}
-
-.launch-grip__cta {
-  background: var(--accent);
-  color: #fff !important;
-}
-
-.launch-grip__cta:hover,
-.launch-grip__cta:focus-visible {
-  background: var(--accent-dark) !important;
-}
-
 .site-header {
   position: sticky;
   top: 0;
@@ -1201,19 +1158,6 @@ p {
     display: none;
   }
 
-  .launch-grip {
-    right: 12px;
-    bottom: 10px;
-    left: 12px;
-    justify-content: space-between;
-  }
-
-  .launch-grip a {
-    flex: 1;
-    min-width: 0;
-    padding: 0 8px;
-  }
-
   h1 {
     font-size: 34px;
   }
@@ -1298,4 +1242,5 @@ p {
    ver1.9 - 2026-05-08 - Added fixed quick navigation, add-on/review visuals, responsive comparison scroll, portrait developer image, and FAQ emphasis.
    ver2.0 - 2026-05-08 - Changed add-ons to desktop 3-column layout, comparison to an HTML table, and reviews to large readable cards.
    ver2.1 - 2026-05-08 - Cropped previous add-on images above the price area and enlarged comparison table text and marks.
-   ver2.2 - 2026-05-09 - Removed the featured add-on border override and centered footer support links. */
+   ver2.2 - 2026-05-09 - Removed the featured add-on border override and centered footer support links.
+   ver2.3 - 2026-05-09 - Removed floating quick navigation styles from desktop and mobile layouts. */

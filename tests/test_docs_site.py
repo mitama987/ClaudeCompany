@@ -150,6 +150,7 @@ class DocumentationSiteTests(unittest.TestCase):
 
         self.assertIn(">無料版を試す</a>", html)
         self.assertNotIn(">無料版</a>", html)
+        self.assertIn('href="styles.css?v=20260509-footer"', html)
 
         featured_rule = re.search(r"\.addon-item--featured\s*\{(?P<body>[\s\S]*?)\}", css)
         self.assertIsNone(featured_rule)
@@ -538,3 +539,4 @@ if __name__ == "__main__":
 # ver0.20 - 2026-05-08 - Required cropped previous-style add-on images and larger comparison marks.
 # ver0.21 - 2026-05-09 - Required duplicate add-on titles and visible footer/version history to be removed.
 # ver0.22 - 2026-05-09 - Required footer support links, updated header trial CTA, and consistent add-on card borders.
+# ver0.23 - 2026-05-09 - Required a stylesheet cache-busting version for the footer and add-on border release.

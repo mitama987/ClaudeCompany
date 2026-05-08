@@ -671,10 +671,6 @@ p {
   background: #fff;
 }
 
-.addon-item--featured {
-  border: 2px solid var(--green);
-}
-
 .addon-item__best {
   color: var(--green);
 }
@@ -1125,6 +1121,14 @@ p {
   font-weight: 800;
 }
 
+.footer__grid--links {
+  justify-content: center;
+}
+
+.footer__grid--links nav {
+  justify-content: center;
+}
+
 .version-history {
   padding: 0 0 28px;
   color: var(--muted);
@@ -1293,4 +1297,5 @@ p {
    ver1.8 - 2026-05-06 - Added mobile-only developer profile timeline and tag layout.
    ver1.9 - 2026-05-08 - Added fixed quick navigation, add-on/review visuals, responsive comparison scroll, portrait developer image, and FAQ emphasis.
    ver2.0 - 2026-05-08 - Changed add-ons to desktop 3-column layout, comparison to an HTML table, and reviews to large readable cards.
-   ver2.1 - 2026-05-08 - Cropped previous add-on images above the price area and enlarged comparison table text and marks. */
+   ver2.1 - 2026-05-08 - Cropped previous add-on images above the price area and enlarged comparison table text and marks.
+   ver2.2 - 2026-05-09 - Removed the featured add-on border override and centered footer support links. */

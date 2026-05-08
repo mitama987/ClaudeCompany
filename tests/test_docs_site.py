@@ -133,11 +133,26 @@ class DocumentationSiteTests(unittest.TestCase):
         ]:
             self.assertNotIn(f"<h3>{title}</h3>", html)
 
+        self.assertIn('<footer class="site-footer">', html)
+        self.assertIn('aria-label="フッターリンク"', html)
+        self.assertIn("お問い合わせ", visible_text)
+        self.assertIn("購入後の手順書", visible_text)
+        self.assertIn("https://forms.gle/sDG46hdxTo9E4p4CA", html)
+        self.assertIn("https://xtools-docs-auth.web.app/", html)
         self.assertNotIn('class="version-history"', html)
-        self.assertNotIn('class="site-footer"', html)
         self.assertNotIn("GitHub Pagesで公開できる静的LPです。", visible_text)
         self.assertNotIn("Version History", visible_text)
         self.assertNotIn("ver2.3", visible_text)
+
+    def test_header_trial_cta_and_amazon_addon_border_match_other_cards(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        css = (ROOT / "docs/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn(">無料版を試す</a>", html)
+        self.assertNotIn(">無料版</a>", html)
+
+        featured_rule = re.search(r"\.addon-item--featured\s*\{(?P<body>[\s\S]*?)\}", css)
+        self.assertIsNone(featured_rule)
 
     def test_minimum_landing_page_variant_is_preserved(self):
         minimal = (ROOT / "docs/index-minimal.html").read_text(encoding="utf-8")
@@ -522,3 +537,4 @@ if __name__ == "__main__":
 # ver0.19 - 2026-05-08 - Required 3-column add-ons, price-free regenerated add-on images, HTML comparison table, and larger readable reviews.
 # ver0.20 - 2026-05-08 - Required cropped previous-style add-on images and larger comparison marks.
 # ver0.21 - 2026-05-09 - Required duplicate add-on titles and visible footer/version history to be removed.
+# ver0.22 - 2026-05-09 - Required footer support links, updated header trial CTA, and consistent add-on card borders.

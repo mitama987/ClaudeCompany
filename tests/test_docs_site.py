@@ -25,6 +25,7 @@ class DocumentationSiteTests(unittest.TestCase):
             "docs/assets/images/auto_dm_flow.png",
             "docs/assets/images/amazon_flow.png",
             "docs/assets/images/plan_compare.png",
+            "docs/assets/images/favicon.png",
             "docs/assets/images/developer_portrait.webp",
             "docs/assets/images/addons/addons_ai.webp",
             "docs/assets/images/addons/addons_engagement.webp",
@@ -121,6 +122,7 @@ class DocumentationSiteTests(unittest.TestCase):
         self.assertRegex(html, r"<main\b")
         self.assertRegex(html, r"<footer\b")
         self.assertRegex(html, r"aria-label=\"[^\"]+\"")
+        self.assertIn('rel="icon"', html)
         self.assertIn('"@type": "Product"', html)
 
     def test_minimum_landing_page_variant_is_preserved(self):
@@ -463,3 +465,4 @@ if __name__ == "__main__":
 # ver0.15 - 2026-05-06 - Required the comparison image to be a table-style PNG instead of plan cards.
 # ver0.16 - 2026-05-06 - Added checks for mobile developer profile timeline fallback.
 # ver0.17 - 2026-05-08 - Added checks for reference pricing/add-ons/reviews, portrait developer image, emphasized FAQ, and floating launch grip.
+# ver0.18 - 2026-05-08 - Required a local favicon so the published page avoids browser favicon 404s.

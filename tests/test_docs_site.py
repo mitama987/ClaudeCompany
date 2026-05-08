@@ -71,8 +71,6 @@ class DocumentationSiteTests(unittest.TestCase):
             "Keepa連携+在庫監視+自動投稿",
             "3プランを、横で並べて",
             "累計100名以上が選んだ、本物の自動化",
-            "AI生成パック",
-            "マルチアカウントパック",
             "含まれるもの",
             "まずは基本版で十分",
             "開発者について",
@@ -97,8 +95,6 @@ class DocumentationSiteTests(unittest.TestCase):
             "¥19,800",
             "launch-grip",
             "faq-emphasis",
-            "GitHub Pages",
-            "Version History",
         ]
         for phrase in required_phrases:
             self.assertIn(phrase, html)
@@ -120,10 +116,28 @@ class DocumentationSiteTests(unittest.TestCase):
             self.assertNotIn(phrase, html)
 
         self.assertRegex(html, r"<main\b")
-        self.assertRegex(html, r"<footer\b")
         self.assertRegex(html, r"aria-label=\"[^\"]+\"")
         self.assertIn('rel="icon"', html)
         self.assertIn('"@type": "Product"', html)
+
+    def test_visible_footer_and_addon_duplicate_titles_are_removed(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        visible_text = self.visible_text(html)
+
+        for title in [
+            "AI生成パック",
+            "エンゲージメントパック",
+            "マルチアカウントパック",
+            "コミュニティパック",
+            "Amazon在庫復活パック",
+        ]:
+            self.assertNotIn(f"<h3>{title}</h3>", html)
+
+        self.assertNotIn('class="version-history"', html)
+        self.assertNotIn('class="site-footer"', html)
+        self.assertNotIn("GitHub Pagesで公開できる静的LPです。", visible_text)
+        self.assertNotIn("Version History", visible_text)
+        self.assertNotIn("ver2.3", visible_text)
 
     def test_minimum_landing_page_variant_is_preserved(self):
         minimal = (ROOT / "docs/index-minimal.html").read_text(encoding="utf-8")
@@ -410,6 +424,14 @@ class DocumentationSiteTests(unittest.TestCase):
         return struct.unpack(">II", header[16:24])
 
     @staticmethod
+    def visible_text(html):
+        visible = re.sub(r"<!--[\s\S]*?-->", "", html)
+        visible = re.sub(r"<script[\s\S]*?</script>", "", visible)
+        visible = re.sub(r"<style[\s\S]*?</style>", "", visible)
+        visible = re.sub(r"<[^>]+>", "", visible)
+        return re.sub(r"\s+", "", visible)
+
+    @staticmethod
     def as_list(value):
         if value is None:
             return []
@@ -499,3 +521,4 @@ if __name__ == "__main__":
 # ver0.18 - 2026-05-08 - Required a local favicon so the published page avoids browser favicon 404s.
 # ver0.19 - 2026-05-08 - Required 3-column add-ons, price-free regenerated add-on images, HTML comparison table, and larger readable reviews.
 # ver0.20 - 2026-05-08 - Required cropped previous-style add-on images and larger comparison marks.
+# ver0.21 - 2026-05-09 - Required duplicate add-on titles and visible footer/version history to be removed.

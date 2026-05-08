@@ -269,6 +269,7 @@ class DocumentationSiteTests(unittest.TestCase):
         self.assertIn("新機能の即時利用", html)
         self.assertIn("全5種同梱", html)
         self.assertIn('scope="col"', html)
+        self.assertEqual(html.count('class="compare-table__mark"'), 10)
         self.assertNotIn('class="compare-image"', html)
         self.assertNotIn("比較表を画像化しています", html)
 
@@ -280,7 +281,8 @@ class DocumentationSiteTests(unittest.TestCase):
             "addons_amazon.webp",
         ]:
             with self.subTest(image_name=image_name):
-                self.assertGreater((ROOT / "docs" / "assets" / "images" / "addons" / image_name).stat().st_size, 45_000)
+                self.assertIn(f'{image_name}" alt=', html)
+                self.assertIn('width="1024" height="610"', html)
 
     def test_reviews_are_large_and_scrollable_for_readability(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
@@ -496,3 +498,4 @@ if __name__ == "__main__":
 # ver0.17 - 2026-05-08 - Added checks for reference pricing/add-ons/reviews, portrait developer image, emphasized FAQ, and floating launch grip.
 # ver0.18 - 2026-05-08 - Required a local favicon so the published page avoids browser favicon 404s.
 # ver0.19 - 2026-05-08 - Required 3-column add-ons, price-free regenerated add-on images, HTML comparison table, and larger readable reviews.
+# ver0.20 - 2026-05-08 - Required cropped previous-style add-on images and larger comparison marks.

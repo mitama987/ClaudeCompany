@@ -663,7 +663,7 @@ p {
 
 .addon-item__image {
   width: 100%;
-  aspect-ratio: 1280 / 860;
+  aspect-ratio: 1024 / 610;
   object-fit: cover;
   margin: -8px 0 16px;
   border: 1px solid var(--line);
@@ -762,7 +762,7 @@ p {
   border-radius: calc(var(--radius) - 2px);
   background: #fff;
   color: var(--ink);
-  font-size: 15px;
+  font-size: 17px;
   line-height: 1.45;
 }
 
@@ -791,6 +791,7 @@ p {
 .compare-table thead th {
   background: var(--ink);
   color: #fff;
+  font-size: 17px;
   font-weight: 900;
 }
 
@@ -831,6 +832,17 @@ p {
 
 .compare-table td {
   color: var(--muted);
+}
+
+.compare-table__mark {
+  color: var(--accent-dark) !important;
+  font-size: 25px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.compare-table td:nth-child(4).compare-table__mark {
+  color: var(--green) !important;
 }
 
 .review-grid {
@@ -1280,4 +1292,5 @@ p {
    ver1.7 - 2026-05-06 - Styled add-on detail toggles, image comparison, and developer introduction section.
    ver1.8 - 2026-05-06 - Added mobile-only developer profile timeline and tag layout.
    ver1.9 - 2026-05-08 - Added fixed quick navigation, add-on/review visuals, responsive comparison scroll, portrait developer image, and FAQ emphasis.
-   ver2.0 - 2026-05-08 - Changed add-ons to desktop 3-column layout, comparison to an HTML table, and reviews to large readable cards. */
+   ver2.0 - 2026-05-08 - Changed add-ons to desktop 3-column layout, comparison to an HTML table, and reviews to large readable cards.
+   ver2.1 - 2026-05-08 - Cropped previous add-on images above the price area and enlarged comparison table text and marks. */

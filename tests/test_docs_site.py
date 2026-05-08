@@ -25,7 +25,16 @@ class DocumentationSiteTests(unittest.TestCase):
             "docs/assets/images/auto_dm_flow.png",
             "docs/assets/images/amazon_flow.png",
             "docs/assets/images/plan_compare.png",
-            "docs/assets/images/developer_profile.webp",
+            "docs/assets/images/developer_portrait.webp",
+            "docs/assets/images/addons/addons_ai.webp",
+            "docs/assets/images/addons/addons_engagement.webp",
+            "docs/assets/images/addons/addons_multi.webp",
+            "docs/assets/images/addons/addons_community.webp",
+            "docs/assets/images/addons/addons_amazon.webp",
+            "docs/assets/images/reviews/review_01.png",
+            "docs/assets/images/reviews/review_02.png",
+            "docs/assets/images/reviews/review_03.png",
+            "docs/assets/images/reviews/review_04.png",
             "install.ps1",
             ".docs/github-distribution-docs-site.md",
             ".docs/xtp3-rich-lp.md",
@@ -45,13 +54,24 @@ class DocumentationSiteTests(unittest.TestCase):
             "コミュニティ投稿",
             "自動DM",
             "Amazon在庫復活",
-            "選ばれる理由",
+            "あなたに合う、買い切りプランを",
+            "月額・サブスクは一切ありません",
+            "定期投稿（基本）",
+            "AI機能なし",
+            "複数アカウント非対応",
+            "人気No.1",
+            "全基本機能 無制限",
+            "永続ライセンス",
             "¥2,980の基本版でできること",
-            "必要になったら足せるアドオン",
-            "3プランを横で比較",
+            "必要な機能だけ、あとから足せる",
+            "ランダム投稿+AI+スプシ取込",
+            "自動いいね+フォロー+リプライ",
+            "プロキシ+一括登録+共通設定",
+            "Keepa連携+在庫監視+自動投稿",
+            "3プランを、横で並べて",
+            "累計100名以上が選んだ、本物の自動化",
             "AI生成パック",
             "マルチアカウントパック",
-            "こんな人に",
             "含まれるもの",
             "まずは基本版で十分",
             "開発者について",
@@ -74,6 +94,8 @@ class DocumentationSiteTests(unittest.TestCase):
             "無料版",
             "¥2,980",
             "¥19,800",
+            "launch-grip",
+            "faq-emphasis",
             "GitHub Pages",
             "Version History",
         ]
@@ -83,6 +105,7 @@ class DocumentationSiteTests(unittest.TestCase):
         removed_phrases = [
             "信頼材料。",
             "アドオンで広がる",
+            "選ばれる理由",
         ]
         for phrase in removed_phrases:
             self.assertNotIn(phrase, html)
@@ -124,7 +147,7 @@ class DocumentationSiteTests(unittest.TestCase):
         visible_text = re.sub(r"<[^>]+>", "", visible_text)
         visible_text = re.sub(r"\s+", "", visible_text)
 
-        self.assertLess(len(visible_text), 8400)
+        self.assertLess(len(visible_text), 9000)
         self.assertIn('src="assets/images/feature_map.png"', html)
         self.assertIn('src="assets/images/random_flow.png"', html)
         self.assertIn('src="assets/images/proxy_protection.png"', html)
@@ -132,7 +155,9 @@ class DocumentationSiteTests(unittest.TestCase):
         self.assertIn('src="assets/images/auto_dm_flow.png"', html)
         self.assertIn('src="assets/images/amazon_flow.png"', html)
         self.assertIn('src="assets/images/plan_compare.png"', html)
-        self.assertIn('src="assets/images/developer_profile.webp"', html)
+        self.assertIn('src="assets/images/developer_portrait.webp"', html)
+        self.assertIn('src="assets/images/addons/addons_ai.webp"', html)
+        self.assertIn('src="assets/images/reviews/review_01.png"', html)
         self.assertNotIn("assets.st-note.com", html)
         self.assertNotIn("C:\\Users\\mitam\\Desktop\\work\\90_other\\ClaudeCompany", html)
 
@@ -140,12 +165,12 @@ class DocumentationSiteTests(unittest.TestCase):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
 
         expected_order = [
-            "選ばれる理由",
             "必要な機能だけ、短く見る。",
-            "月額なし。買い切りで始める。",
+            "あなたに合う、買い切りプランを",
             "¥2,980の基本版でできること",
-            "必要になったら足せるアドオン",
-            "3プランを横で比較",
+            "必要な機能だけ、あとから足せる",
+            "3プランを、横で並べて",
+            "お客様の声",
             "開発者について",
             "よくある質問。",
         ]
@@ -153,9 +178,9 @@ class DocumentationSiteTests(unittest.TestCase):
         self.assertEqual(positions, sorted(positions))
         self.assertIn('class="compare-visual', html)
         self.assertIn('class="addon-grid"', html)
-        self.assertIn('class="reason-card', html)
         self.assertIn('class="basic-panel', html)
         self.assertIn('class="addon-detail"', html)
+        self.assertIn('class="review-grid"', html)
         self.assertIn('class="developer-panel', html)
         self.assertNotIn('class="basic-panel__aside"', html)
         self.assertNotIn('class="addon-item__action"', html)
@@ -166,11 +191,13 @@ class DocumentationSiteTests(unittest.TestCase):
         css = (ROOT / "docs/styles.css").read_text(encoding="utf-8")
 
         rich_classes = [
-            "reason-card__meta",
+            "launch-grip__cta",
             "basic-panel__main",
+            "addon-item__image",
             "addon-item__best",
             "addon-detail__list",
             "compare-image",
+            "review-card",
             "developer-copy",
             "developer-proof",
         ]
@@ -178,19 +205,23 @@ class DocumentationSiteTests(unittest.TestCase):
             self.assertIn(class_name, html)
 
         for selector in [
-            ".reason-card::before",
+            ".launch-grip",
             ".basic-panel",
+            ".addon-item__image",
             ".addon-detail",
             ".compare-visual",
+            ".review-grid",
             ".developer-panel",
             ".developer-timeline",
+            ".faq-emphasis",
         ]:
             self.assertIn(selector, css)
 
-    def test_developer_profile_has_mobile_timeline_fallback(self):
+    def test_developer_profile_uses_portrait_and_mobile_timeline(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
         css = (ROOT / "docs/styles.css").read_text(encoding="utf-8")
 
+        self.assertIn('src="assets/images/developer_portrait.webp"', html)
         self.assertIn('class="developer-timeline"', html)
         self.assertIn('aria-label="スマホ向け開発者プロフィール"', html)
         for phrase in [
@@ -209,28 +240,25 @@ class DocumentationSiteTests(unittest.TestCase):
         self.assertRegex(css, r"\.developer-timeline\s*\{[\s\S]*display:\s*none;")
         self.assertRegex(
             css,
-            r"@media\s*\(max-width:\s*640px\)\s*\{[\s\S]*\.developer-visual\s*\{[\s\S]*display:\s*none;",
-        )
-        self.assertRegex(
-            css,
             r"@media\s*\(max-width:\s*640px\)\s*\{[\s\S]*\.developer-timeline\s*\{[\s\S]*display:\s*block;",
         )
+        self.assertNotRegex(css, r"\.developer-visual\s*\{[^}]*display:\s*none;")
 
     def test_addons_use_toggles_and_compare_is_an_image(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
 
         self.assertEqual(html.count('<details class="addon-detail">'), 5)
         self.assertEqual(html.count("含まれるものを見る"), 5)
-        self.assertIn("投稿案のたたき台作成", html)
-        self.assertIn("いいね・フォローなどの反応獲得補助", html)
-        self.assertIn("目安100アカウントまで登録", html)
-        self.assertIn("指定コミュニティへの投稿", html)
+        self.assertIn("投稿案生成・文章の言い換え", html)
+        self.assertIn("自動いいね・自動フォロー・自動リプライ", html)
+        self.assertIn("アカウント別プロキシ", html)
+        self.assertIn("指定コミュニティへの自動投稿", html)
         self.assertIn("Keepa連携による在庫監視", html)
         self.assertIn('class="compare-image"', html)
         self.assertIn('alt="無料版、買い切り、フル買切りの3プラン比較表"', html)
-        self.assertIn('width="1800" height="900"', html)
+        self.assertIn('width="1800" height="1080"', html)
         self.assertIn("比較表を画像化しています", html)
-        self.assertEqual(self.png_dimensions(ROOT / "docs/assets/images/plan_compare.png"), (1800, 900))
+        self.assertEqual(self.png_dimensions(ROOT / "docs/assets/images/plan_compare.png"), (1800, 1080))
         self.assertNotIn("<table", html)
 
     def test_reference_faq_is_added_without_touching_minimal_variant(self):
@@ -254,6 +282,8 @@ class DocumentationSiteTests(unittest.TestCase):
         self.assertIn("メモリ4GB", html)
         self.assertIn("目安100アカウント", html)
         self.assertIn("¥3,200お得", html)
+        self.assertIn("<strong>Windows専用</strong>", html)
+        self.assertIn('<span class="faq-emphasis">Mac / Linuxには対応していません。</span>', html)
 
         self.assertNotIn("プロキシには別途費用がかかりますか？", minimal)
         self.assertNotIn("アドオンは後から追加できますか？", minimal)
@@ -432,3 +462,4 @@ if __name__ == "__main__":
 # ver0.14 - 2026-05-06 - Added checks for toggle add-ons, image-based comparison, and developer introduction section.
 # ver0.15 - 2026-05-06 - Required the comparison image to be a table-style PNG instead of plan cards.
 # ver0.16 - 2026-05-06 - Added checks for mobile developer profile timeline fallback.
+# ver0.17 - 2026-05-08 - Added checks for reference pricing/add-ons/reviews, portrait developer image, emphasized FAQ, and floating launch grip.

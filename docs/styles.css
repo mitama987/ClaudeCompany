@@ -117,6 +117,49 @@ p {
   transform: translateY(0);
 }
 
+.launch-grip {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 60;
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid rgba(223, 215, 200, 0.92);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.launch-grip a {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.launch-grip a:hover,
+.launch-grip a:focus-visible {
+  background: var(--paper-soft);
+  color: var(--ink);
+}
+
+.launch-grip__cta {
+  background: var(--accent);
+  color: #fff !important;
+}
+
+.launch-grip__cta:hover,
+.launch-grip__cta:focus-visible {
+  background: var(--accent-dark) !important;
+}
+
 .site-header {
   position: sticky;
   top: 0;
@@ -557,6 +600,19 @@ p {
   transform: rotate(-45deg);
 }
 
+.plan__limited {
+  color: #81786a !important;
+}
+
+.plan__limited::before {
+  width: 12px !important;
+  height: 2px !important;
+  top: 14px !important;
+  border-left: 0 !important;
+  border-bottom: 2px solid var(--muted) !important;
+  transform: none !important;
+}
+
 .basic-panel {
   overflow: hidden;
   border: 1px solid var(--line);
@@ -603,6 +659,16 @@ p {
   display: flex;
   flex-direction: column;
   min-height: 318px;
+}
+
+.addon-item__image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  margin: -8px 0 16px;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius) - 2px);
+  background: #fff;
 }
 
 .addon-item--featured {
@@ -673,10 +739,17 @@ p {
 .compare-visual {
   margin: 0;
   padding: 16px;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--paper);
   box-shadow: 0 8px 22px rgba(26, 26, 26, 0.05);
+}
+
+.compare-scroll {
+  overflow-x: auto;
+  border-radius: calc(var(--radius) - 2px);
+  scrollbar-color: var(--accent) var(--paper-soft);
 }
 
 .compare-image {
@@ -692,6 +765,27 @@ p {
   color: var(--muted);
   font-size: 14px;
   text-align: center;
+}
+
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.review-card {
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  box-shadow: 0 8px 22px rgba(26, 26, 26, 0.05);
+}
+
+.review-card img {
+  width: 100%;
+  border-radius: calc(var(--radius) - 2px);
+  background: #fff;
 }
 
 .developer-panel {
@@ -751,6 +845,13 @@ p {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: 0 8px 22px rgba(26, 26, 26, 0.08);
+}
+
+.developer-visual--portrait img {
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center 38%;
+  max-height: 620px;
 }
 
 .developer-timeline {
@@ -861,6 +962,12 @@ p {
 
 .faq-item p {
   padding: 0 0 18px;
+}
+
+.faq-item strong,
+.faq-emphasis {
+  color: var(--accent-dark);
+  font-weight: 900;
 }
 
 .faq-more {
@@ -975,12 +1082,17 @@ p {
   .basic-grid,
   .basic-panel .basic-grid,
   .addon-grid,
+  .review-grid,
   .developer-proof {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 640px) {
+  body {
+    padding-bottom: 74px;
+  }
+
   .wrap {
     width: min(100% - 32px, var(--max));
   }
@@ -991,6 +1103,19 @@ p {
 
   .nav__links {
     display: none;
+  }
+
+  .launch-grip {
+    right: 12px;
+    bottom: 10px;
+    left: 12px;
+    justify-content: space-between;
+  }
+
+  .launch-grip a {
+    flex: 1;
+    min-width: 0;
+    padding: 0 8px;
   }
 
   h1 {
@@ -1019,12 +1144,13 @@ p {
     flex-direction: column;
   }
 
-  .developer-panel {
-    padding: 22px;
+  .compare-image {
+    width: 760px;
+    max-width: none;
   }
 
-  .developer-visual {
-    display: none;
+  .developer-panel {
+    padding: 22px;
   }
 
   .developer-timeline {
@@ -1064,4 +1190,5 @@ p {
    ver1.5 - 2026-05-06 - Enriched added sections with stronger card hierarchy, CTAs, comparison highlighting, and trust panel.
    ver1.6 - 2026-05-06 - Added contact-note styling for the expanded FAQ block.
    ver1.7 - 2026-05-06 - Styled add-on detail toggles, image comparison, and developer introduction section.
-   ver1.8 - 2026-05-06 - Added mobile-only developer profile timeline and tag layout. */
+   ver1.8 - 2026-05-06 - Added mobile-only developer profile timeline and tag layout.
+   ver1.9 - 2026-05-08 - Added fixed quick navigation, add-on/review visuals, responsive comparison scroll, portrait developer image, and FAQ emphasis. */

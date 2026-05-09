@@ -3,10 +3,21 @@ from __future__ import annotations
 
 import base64
 import json
+import os
 import urllib.request
 from pathlib import Path
 
-API_KEY = "AIzaSyAAmWfDSIg_kTUAVJWteuphVDrPAL8AK6k"
+
+def _load_gemini_api_key() -> str:
+    if key := os.environ.get("GEMINI_API_KEY"):
+        return key
+    cfg_path = Path(
+        r"C:\Users\mitam\Desktop\work\50_ブログ\.obsidian\plugins\buzzblog-generator\data.json"
+    )
+    return json.loads(cfg_path.read_text(encoding="utf-8"))["apiKey"]
+
+
+API_KEY = _load_gemini_api_key()
 MODEL = "gemini-3-pro-image-preview"
 ENDPOINT = (
     f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent?key={API_KEY}"

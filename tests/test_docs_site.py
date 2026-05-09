@@ -1,9 +1,10 @@
 from pathlib import Path
 import json
 import re
+import shutil
 import subprocess
-import tempfile
 import unittest
+import uuid
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,37 +16,97 @@ class DocumentationSiteTests(unittest.TestCase):
             "docs/index.html",
             "docs/styles.css",
             "docs/script.js",
+            "docs/assets/images/feature_map.png",
+            "docs/assets/images/random_flow.png",
+            "docs/assets/images/proxy_protection.png",
+            "docs/assets/images/community_branch.png",
+            "docs/assets/images/auto_dm_flow.png",
+            "docs/assets/images/amazon_flow.png",
             "install.ps1",
             ".docs/github-distribution-docs-site.md",
+            ".docs/xtp3-rich-lp.md",
         ]:
             self.assertTrue((ROOT / relative_path).is_file(), relative_path)
 
-    def test_index_documents_github_distribution_flow(self):
+    def test_index_documents_xtoolspro3_landing_page(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
 
         required_phrases = [
+            "XToolsPro3",
+            "API不要",
+            "X自動投稿を、",
+            "もっと自然に。",
+            "ランダム投稿",
+            "プロキシ",
+            "コミュニティ投稿",
+            "自動DM",
+            "Amazon在庫復活",
+            "目安100アカウント",
+            "10アカウント程度",
+            "投稿時刻をずらす",
+            "無料版",
+            "¥2,980",
+            "¥19,800",
             "GitHub Pages",
-            "install.ps1",
-            "ProjectPath",
-            "Yes, I trust this folder",
-            "dangerously-skip-permissions",
-            "Windows Terminal",
-            "ccnest",
             "Version History",
         ]
         for phrase in required_phrases:
             self.assertIn(phrase, html)
 
+        old_site_phrases = [
+            "Claude Terminal Shortcuts",
+            "Windows Terminal",
+            "dangerously-skip-permissions",
+        ]
+        for phrase in old_site_phrases:
+            self.assertNotIn(phrase, html)
+
         self.assertRegex(html, r"<main\b")
         self.assertRegex(html, r"<footer\b")
         self.assertRegex(html, r"aria-label=\"[^\"]+\"")
+        self.assertIn('"@type": "Product"', html)
 
-    def test_index_has_copyable_commands_without_hardcoded_personal_path(self):
+    def test_hero_headline_has_fixed_two_line_break(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        css = (ROOT / "docs/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn('<span class="headline-line">X自動投稿を、</span>', html)
+        self.assertIn('<span class="headline-line">もっと自然に。</span>', html)
+        self.assertRegex(css, r"\.headline-line\s*\{[\s\S]*display:\s*block;")
+
+    def test_index_is_concise_and_uses_local_visual_assets(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        visible_text = re.sub(r"<script[\s\S]*?</script>", "", html)
+        visible_text = re.sub(r"<style[\s\S]*?</style>", "", visible_text)
+        visible_text = re.sub(r"<[^>]+>", "", visible_text)
+        visible_text = re.sub(r"\s+", "", visible_text)
+
+        self.assertLess(len(visible_text), 5200)
+        self.assertIn('src="assets/images/feature_map.png"', html)
+        self.assertIn('src="assets/images/random_flow.png"', html)
+        self.assertIn('src="assets/images/proxy_protection.png"', html)
+        self.assertIn('src="assets/images/community_branch.png"', html)
+        self.assertIn('src="assets/images/auto_dm_flow.png"', html)
+        self.assertIn('src="assets/images/amazon_flow.png"', html)
+        self.assertNotIn("assets.st-note.com", html)
+        self.assertNotIn("C:\\Users\\mitam\\Desktop\\work\\90_other\\ClaudeCompany", html)
+
+    def test_feature_copy_appears_before_feature_images(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
 
-        self.assertIn('data-copy-target=', html)
-        self.assertIn("C:\\path\\to\\project", html)
-        self.assertNotIn("C:\\Users\\mitam\\Desktop\\work\\90_other\\ClaudeCompany", html)
+        feature_names = [
+            ("ランダム投稿", "random_flow.png"),
+            ("プロキシ", "proxy_protection.png"),
+            ("コミュニティ投稿", "community_branch.png"),
+            ("自動DM", "auto_dm_flow.png"),
+            ("Amazon在庫復活", "amazon_flow.png"),
+        ]
+        for heading, image_name in feature_names:
+            with self.subTest(heading=heading):
+                self.assertLess(html.index(heading), html.index(image_name))
+
+        self.assertNotIn('class="feature-cards"', html)
+        self.assertNotIn('class="feature-card', html)
 
     def test_installer_has_non_destructive_safety_measures(self):
         script = (ROOT / "install.ps1").read_text(encoding="utf-8")
@@ -104,8 +165,10 @@ class DocumentationSiteTests(unittest.TestCase):
 
         self.assertIn(":focus-visible", css)
         self.assertIn("prefers-reduced-motion", css)
+        self.assertIn(".skip-link", css)
         self.assertIn("Version History", css)
-        self.assertIn("aria-live", js)
+        self.assertIn("IntersectionObserver", js)
+        self.assertIn("details", js)
         self.assertIn("Version History", js)
 
     @staticmethod
@@ -117,8 +180,10 @@ class DocumentationSiteTests(unittest.TestCase):
         return [value]
 
     def run_installer_with_launch_command(self, launch_command):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            temp_path = Path(temp_dir)
+        temp_path = ROOT / f"tmp-tests-{uuid.uuid4().hex}"
+        temp_path.mkdir()
+
+        try:
             project_path = temp_path / "project"
             project_path.mkdir()
             settings_path = temp_path / "settings.json"
@@ -167,6 +232,8 @@ class DocumentationSiteTests(unittest.TestCase):
             )
 
             return json.loads(settings_path.read_text(encoding="utf-8"))
+        finally:
+            shutil.rmtree(temp_path, ignore_errors=True)
 
 
 if __name__ == "__main__":
@@ -176,3 +243,11 @@ if __name__ == "__main__":
 # Version History
 # ver0.1 - 2026-04-25 - Added TDD checks for the GitHub distribution documentation site.
 # ver0.2 - 2026-04-25 - Added installer behavior tests for ccnest Ctrl+T routing.
+# ver0.3 - 2026-05-06 - Reworked public site checks for the concise XToolsPro3 GitHub Pages landing page.
+# ver0.4 - 2026-05-06 - Pointed installer integration tests at a writable workspace temp root.
+# ver0.5 - 2026-05-06 - Avoided hidden temp directories so Windows sandboxed tests can create child folders.
+# ver0.6 - 2026-05-06 - Replaced tempfile usage with explicit workspace directories to avoid restrictive ACLs.
+# ver0.7 - 2026-05-06 - Added checks for rich SVG feature assets and copy-before-image feature layout.
+# ver0.8 - 2026-05-06 - Updated public site checks for GPT Images 2 PNG feature assets.
+# ver0.9 - 2026-05-06 - Required every feature item to use the full-width copy-first feature layout.
+# ver0.10 - 2026-05-06 - Added checks for fixed two-line hero headline and clearer account limit FAQ copy.

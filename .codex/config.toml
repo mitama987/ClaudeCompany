@@ -1,0 +1,12 @@
+[mcp_servers.trello]
+args = [
+    "/c",
+    "npx",
+    "-y",
+    "@delorenj/mcp-server-trello",
+]
+command = "cmd"
+
+[mcp_servers.trello.env]
+TRELLO_API_KEY = "b698e39ff2cf7416ee51ba987859edcf"
+TRELLO_TOKEN = "60cd0776a0620f1687b92f46fc6763547cf2693c615a83182eb0b04c8af2997e"

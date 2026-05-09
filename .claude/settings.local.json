@@ -4,7 +4,27 @@
       "mcp__trello__get_board_labels",
       "mcp__trello__create_label",
       "mcp__trello__update_card_details",
-      "Bash(source .env && export GEMINI_API_KEY)"
+      "Bash(source .env && export GEMINI_API_KEY)",
+      "Bash(rm -rf /c/Users/mitam/.claude/plugins/cache/cc-company/company/2.0.0)",
+      "Bash(cp -r /c/Users/mitam/.claude/plugins/marketplaces/cc-company/plugins/company /c/Users/mitam/.claude/plugins/cache/cc-company/company/2.1.0)",
+      "mcp__trello__move_card",
+      "mcp__trello__get_lists",
+      "mcp__trello__get_cards_by_list_id",
+      "PowerShell(Start-Process \"obsidian://open?vault=50_%E3%83%96%E3%83%AD%E3%82%B0&file=16_%E6%B1%BA%E6%B8%88%E3%82%B5%E3%83%BC%E3%83%93%E3%82%B9%2FApps%2FApps_API_%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E8%B2%A9%E5%A3%B2%E8%80%85%E5%90%91%E3%81%91_Stripe%E6%AF%94%E8%BC%83\")",
+      "PowerShell($uri = \"obsidian://open?vault=50_%E3%83%96%E3%83%AD%E3%82%B0&file=02_note%2F01_XToolsPro3%2F02_%E3%83%8A%E3%83%AC%E3%83%83%E3%82%B8%2FX%E5%87%8D%E7%B5%90%E3%83%BBBAN%2FX%E5%87%8D%E7%B5%90%E7%A5%AD%E3%82%8A%EF%BC%882026-04_%E5%9E%A2%E3%83%90%E3%83%B3%E7%B3%BB%EF%BC%89\"; Start-Process $uri)",
+      "Read(//c/Users/mitam/Desktop/work/90_other/ccnest-launcher/**)",
+      "Bash(gh repo *)",
+      "mcp__claude_ai_Google_Drive__read_file_content",
+      "mcp__claude_ai_Google_Drive__get_file_metadata",
+      "mcp__claude_ai_Google_Drive__download_file_content",
+      "mcp__claude_ai_Google_Drive__search_files",
+      "Bash(mkdir -p \"C:/Users/mitam/.claude/plans\")",
+      "Read(//c/Users/mitam/.claude/plans/**)",
+      "PowerShell(Get-Process *)",
+      "PowerShell($env:PATH -split ';' | Where-Object { $_ -match 'cargo|npm' })",
+      "PowerShell(Test-Path *)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\mitam\\\\Desktop\" -Directory -Recurse -Depth 6 -ErrorAction SilentlyContinue | Where-Object { $_.Name -match \"ccnest\" } | Select-Object -First 10 FullName)",
+      "mcp__trello__get_active_board_info"
     ]
   }
 }

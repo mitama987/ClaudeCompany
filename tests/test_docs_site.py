@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 import re
 import shutil
+import struct
 import subprocess
 import unittest
 import uuid
@@ -14,6 +15,7 @@ class DocumentationSiteTests(unittest.TestCase):
     def test_public_site_files_exist(self):
         for relative_path in [
             "docs/index.html",
+            "docs/index-minimal.html",
             "docs/styles.css",
             "docs/script.js",
             "docs/assets/images/feature_map.png",
@@ -22,6 +24,18 @@ class DocumentationSiteTests(unittest.TestCase):
             "docs/assets/images/community_branch.png",
             "docs/assets/images/auto_dm_flow.png",
             "docs/assets/images/amazon_flow.png",
+            "docs/assets/images/plan_compare.png",
+            "docs/assets/images/favicon.png",
+            "docs/assets/images/developer_portrait.webp",
+            "docs/assets/images/addons/addons_ai.webp",
+            "docs/assets/images/addons/addons_engagement.webp",
+            "docs/assets/images/addons/addons_multi.webp",
+            "docs/assets/images/addons/addons_community.webp",
+            "docs/assets/images/addons/addons_amazon.webp",
+            "docs/assets/images/reviews/review_01.png",
+            "docs/assets/images/reviews/review_02.png",
+            "docs/assets/images/reviews/review_03.png",
+            "docs/assets/images/reviews/review_04.png",
             "install.ps1",
             ".docs/github-distribution-docs-site.md",
             ".docs/xtp3-rich-lp.md",
@@ -41,17 +55,56 @@ class DocumentationSiteTests(unittest.TestCase):
             "コミュニティ投稿",
             "自動DM",
             "Amazon在庫復活",
+            "あなたに合う、買い切りプランを",
+            "月額・サブスクは一切ありません",
+            "定期投稿（基本）",
+            "AI機能なし",
+            "複数アカウント非対応",
+            "人気No.1",
+            "全基本機能 無制限",
+            "永続ライセンス",
+            "¥2,980の基本版でできること",
+            "必要な機能だけ、あとから足せる",
+            "ランダム投稿+AI+スプシ取込",
+            "自動いいね+フォロー+リプライ",
+            "プロキシ+一括登録+共通設定",
+            "Keepa連携+在庫監視+自動投稿",
+            "3プランを、横で並べて",
+            "累計100名以上が選んだ、本物の自動化",
+            "含まれるもの",
+            "まずは基本版で十分",
+            "開発者について",
+            "大企業品質を、個人にも。",
+            "早稲田大学院",
+            "上場企業でAI推進",
+            "マイナビ社",
+            "XToolsシリーズ",
+            "3年の歳月",
             "目安100アカウント",
             "10アカウント程度",
             "投稿時刻をずらす",
+            "Macでも使えますか？",
+            "必要なPCスペックは？",
+            "プロキシには別途費用がかかりますか？",
+            "アドオンは後から追加できますか？",
+            "Windows 10",
+            "月額500〜800円",
+            "お問い合わせフォーム",
             "無料版",
             "¥2,980",
             "¥19,800",
-            "GitHub Pages",
-            "Version History",
+            "faq-emphasis",
         ]
         for phrase in required_phrases:
             self.assertIn(phrase, html)
+
+        removed_phrases = [
+            "信頼材料。",
+            "アドオンで広がる",
+            "選ばれる理由",
+        ]
+        for phrase in removed_phrases:
+            self.assertNotIn(phrase, html)
 
         old_site_phrases = [
             "Claude Terminal Shortcuts",
@@ -62,9 +115,58 @@ class DocumentationSiteTests(unittest.TestCase):
             self.assertNotIn(phrase, html)
 
         self.assertRegex(html, r"<main\b")
-        self.assertRegex(html, r"<footer\b")
         self.assertRegex(html, r"aria-label=\"[^\"]+\"")
+        self.assertIn('rel="icon"', html)
         self.assertIn('"@type": "Product"', html)
+
+    def test_visible_footer_and_addon_duplicate_titles_are_removed(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        visible_text = self.visible_text(html)
+
+        for title in [
+            "AI生成パック",
+            "エンゲージメントパック",
+            "マルチアカウントパック",
+            "コミュニティパック",
+            "Amazon在庫復活パック",
+        ]:
+            self.assertNotIn(f"<h3>{title}</h3>", html)
+
+        self.assertIn('<footer class="site-footer">', html)
+        self.assertIn('aria-label="フッターリンク"', html)
+        self.assertIn("お問い合わせ", visible_text)
+        self.assertIn("購入後の手順書", visible_text)
+        self.assertIn("https://forms.gle/sDG46hdxTo9E4p4CA", html)
+        self.assertIn("https://xtools-docs-auth.web.app/", html)
+        self.assertNotIn('class="version-history"', html)
+        self.assertNotIn("GitHub Pagesで公開できる静的LPです。", visible_text)
+        self.assertNotIn("Version History", visible_text)
+        self.assertNotIn("ver2.3", visible_text)
+
+    def test_header_trial_cta_and_amazon_addon_border_match_other_cards(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        css = (ROOT / "docs/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn(">無料版を試す</a>", html)
+        self.assertNotIn(">無料版</a>", html)
+        self.assertIn('href="styles.css?v=20260509-no-float"', html)
+        self.assertNotIn('href="index-minimal.html">ミニマム版</a>', html)
+        self.assertNotIn('class="launch-grip"', html)
+        self.assertNotIn('class="launch-grip__cta"', html)
+        self.assertNotIn('aria-label="固定クイック移動"', html)
+
+        featured_rule = re.search(r"\.addon-item--featured\s*\{(?P<body>[\s\S]*?)\}", css)
+        self.assertIsNone(featured_rule)
+        self.assertNotIn(".launch-grip", css)
+
+    def test_minimum_landing_page_variant_is_preserved(self):
+        minimal = (ROOT / "docs/index-minimal.html").read_text(encoding="utf-8")
+
+        self.assertIn("XToolsPro3", minimal)
+        self.assertIn("必要な機能だけ、短く見る。", minimal)
+        self.assertIn("月額なし。買い切りで始める。", minimal)
+        self.assertNotIn("必要になったら足せるアドオン", minimal)
+        self.assertNotIn("3プランを横で比較", minimal)
 
     def test_hero_headline_has_fixed_two_line_break(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
@@ -81,15 +183,175 @@ class DocumentationSiteTests(unittest.TestCase):
         visible_text = re.sub(r"<[^>]+>", "", visible_text)
         visible_text = re.sub(r"\s+", "", visible_text)
 
-        self.assertLess(len(visible_text), 5200)
+        self.assertLess(len(visible_text), 9000)
         self.assertIn('src="assets/images/feature_map.png"', html)
         self.assertIn('src="assets/images/random_flow.png"', html)
         self.assertIn('src="assets/images/proxy_protection.png"', html)
         self.assertIn('src="assets/images/community_branch.png"', html)
         self.assertIn('src="assets/images/auto_dm_flow.png"', html)
         self.assertIn('src="assets/images/amazon_flow.png"', html)
+        self.assertNotIn('src="assets/images/plan_compare.png"', html)
+        self.assertIn('src="assets/images/developer_portrait.webp"', html)
+        self.assertIn('src="assets/images/addons/addons_ai.webp"', html)
+        self.assertIn('src="assets/images/reviews/review_01.png"', html)
         self.assertNotIn("assets.st-note.com", html)
         self.assertNotIn("C:\\Users\\mitam\\Desktop\\work\\90_other\\ClaudeCompany", html)
+
+    def test_reference_sections_are_added_without_long_page_bloat(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+
+        expected_order = [
+            "必要な機能だけ、短く見る。",
+            "あなたに合う、買い切りプランを",
+            "¥2,980の基本版でできること",
+            "必要な機能だけ、あとから足せる",
+            "3プランを、横で並べて",
+            "お客様の声",
+            "開発者について",
+            "よくある質問。",
+        ]
+        positions = [html.index(text) for text in expected_order]
+        self.assertEqual(positions, sorted(positions))
+        self.assertIn('class="compare-visual', html)
+        self.assertIn('class="compare-table', html)
+        self.assertIn('class="addon-grid"', html)
+        self.assertIn('class="basic-panel', html)
+        self.assertIn('class="addon-detail"', html)
+        self.assertIn('class="review-grid"', html)
+        self.assertIn('class="developer-panel', html)
+        self.assertNotIn('class="basic-panel__aside"', html)
+        self.assertNotIn('class="addon-item__action"', html)
+
+    def test_reference_sections_have_richer_visual_structure(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        css = (ROOT / "docs/styles.css").read_text(encoding="utf-8")
+
+        rich_classes = [
+            "basic-panel__main",
+            "addon-item__image",
+            "addon-item__best",
+            "addon-detail__list",
+            "compare-table",
+            "review-card",
+            "review-card__scroll",
+            "developer-copy",
+            "developer-proof",
+        ]
+        for class_name in rich_classes:
+            self.assertIn(class_name, html)
+
+        for selector in [
+            ".basic-panel",
+            ".addon-item__image",
+            ".addon-detail",
+            ".compare-visual",
+            ".compare-table",
+            ".review-grid",
+            ".review-card__scroll",
+            ".developer-panel",
+            ".developer-timeline",
+            ".faq-emphasis",
+        ]:
+            self.assertIn(selector, css)
+
+        self.assertRegex(css, r"\.addon-grid\s*\{[\s\S]*grid-template-columns:\s*repeat\(3,")
+        self.assertRegex(css, r"\.review-grid\s*\{[\s\S]*grid-template-columns:\s*1fr;")
+
+    def test_developer_profile_uses_portrait_and_mobile_timeline(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        css = (ROOT / "docs/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn('src="assets/images/developer_portrait.webp"', html)
+        self.assertIn('class="developer-timeline"', html)
+        self.assertIn('aria-label="スマホ向け開発者プロフィール"', html)
+        for phrase in [
+            "早稲田大学大学院 修了",
+            "上場企業でAI推進担当",
+            "プログラミング独学",
+            "XToolsPro3開発",
+            "X自動化",
+            "Instagram自動化",
+            "AI推進",
+            "スクレイピング",
+            "Bot開発",
+        ]:
+            self.assertIn(phrase, html)
+
+        self.assertRegex(css, r"\.developer-timeline\s*\{[\s\S]*display:\s*none;")
+        self.assertRegex(
+            css,
+            r"@media\s*\(max-width:\s*640px\)\s*\{[\s\S]*\.developer-timeline\s*\{[\s\S]*display:\s*block;",
+        )
+        self.assertNotRegex(css, r"\.developer-visual\s*\{[^}]*display:\s*none;")
+
+    def test_addons_use_toggles_and_compare_is_a_html_table(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+
+        self.assertEqual(html.count('<details class="addon-detail">'), 5)
+        self.assertEqual(html.count("含まれるものを見る"), 5)
+        self.assertEqual(html.count('data-price-free="true"'), 5)
+        self.assertIn("投稿案生成・文章の言い換え", html)
+        self.assertIn("自動いいね・自動フォロー・自動リプライ", html)
+        self.assertIn("アカウント別プロキシ", html)
+        self.assertIn("指定コミュニティへの自動投稿", html)
+        self.assertIn("Keepa連携による在庫監視", html)
+        self.assertIn('<table class="compare-table"', html)
+        self.assertIn("比較項目", html)
+        self.assertIn("予約投稿", html)
+        self.assertIn("新機能の即時利用", html)
+        self.assertIn("全5種同梱", html)
+        self.assertIn('scope="col"', html)
+        self.assertEqual(html.count('class="compare-table__mark"'), 10)
+        self.assertNotIn('class="compare-image"', html)
+        self.assertNotIn("比較表を画像化しています", html)
+
+        for image_name in [
+            "addons_ai.webp",
+            "addons_engagement.webp",
+            "addons_multi.webp",
+            "addons_community.webp",
+            "addons_amazon.webp",
+        ]:
+            with self.subTest(image_name=image_name):
+                self.assertIn(f'{image_name}" alt=', html)
+                self.assertIn('width="1024" height="610"', html)
+
+    def test_reviews_are_large_and_scrollable_for_readability(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        css = (ROOT / "docs/styles.css").read_text(encoding="utf-8")
+
+        self.assertEqual(html.count('class="review-card__scroll"'), 4)
+        self.assertIn('aria-label="お客様の声 1を拡大表示"', html)
+        self.assertRegex(css, r"\.review-grid\s*\{[\s\S]*max-width:\s*980px;")
+        self.assertRegex(css, r"\.review-card img\s*\{[\s\S]*width:\s*100%;")
+        self.assertRegex(css, r"@media\s*\(max-width:\s*640px\)\s*\{[\s\S]*\.review-card img\s*\{[\s\S]*width:\s*760px;")
+
+    def test_reference_faq_is_added_without_touching_minimal_variant(self):
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        minimal = (ROOT / "docs/index-minimal.html").read_text(encoding="utf-8")
+
+        faq_order = [
+            "APIキーは必要ですか？",
+            "Macでも使えますか？",
+            "何アカウントまで使えますか？",
+            "必要なPCスペックは？",
+            "プロキシには別途費用がかかりますか？",
+            "無料版から有料版へ移行できますか？",
+            "アドオンは後から追加できますか？",
+        ]
+        positions = [html.index(text) for text in faq_order]
+        self.assertEqual(positions, sorted(positions))
+        self.assertGreaterEqual(html.count('<details class="faq-item">'), 7)
+        self.assertIn('class="faq-more"', html)
+        self.assertIn("Mac / Linuxには対応していません", html)
+        self.assertIn("メモリ4GB", html)
+        self.assertIn("目安100アカウント", html)
+        self.assertIn("¥3,200お得", html)
+        self.assertIn("<strong>Windows専用</strong>", html)
+        self.assertIn('<span class="faq-emphasis">Mac / Linuxには対応していません。</span>', html)
+
+        self.assertNotIn("プロキシには別途費用がかかりますか？", minimal)
+        self.assertNotIn("アドオンは後から追加できますか？", minimal)
 
     def test_feature_copy_appears_before_feature_images(self):
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
@@ -172,6 +434,22 @@ class DocumentationSiteTests(unittest.TestCase):
         self.assertIn("Version History", js)
 
     @staticmethod
+    def png_dimensions(path):
+        with path.open("rb") as image_file:
+            header = image_file.read(24)
+        if not header.startswith(b"\x89PNG\r\n\x1a\n"):
+            raise AssertionError(f"{path} is not a PNG file")
+        return struct.unpack(">II", header[16:24])
+
+    @staticmethod
+    def visible_text(html):
+        visible = re.sub(r"<!--[\s\S]*?-->", "", html)
+        visible = re.sub(r"<script[\s\S]*?</script>", "", visible)
+        visible = re.sub(r"<style[\s\S]*?</style>", "", visible)
+        visible = re.sub(r"<[^>]+>", "", visible)
+        return re.sub(r"\s+", "", visible)
+
+    @staticmethod
     def as_list(value):
         if value is None:
             return []
@@ -251,3 +529,18 @@ if __name__ == "__main__":
 # ver0.8 - 2026-05-06 - Updated public site checks for GPT Images 2 PNG feature assets.
 # ver0.9 - 2026-05-06 - Required every feature item to use the full-width copy-first feature layout.
 # ver0.10 - 2026-05-06 - Added checks for fixed two-line hero headline and clearer account limit FAQ copy.
+# ver0.11 - 2026-05-06 - Added checks for concise reference-inspired sections, add-ons, and plan comparison.
+# ver0.12 - 2026-05-06 - Added checks for richer visual structure in reference-inspired sections.
+# ver0.13 - 2026-05-06 - Added checks for expanded reference FAQ and preserved minimal variant.
+# ver0.14 - 2026-05-06 - Added checks for toggle add-ons, image-based comparison, and developer introduction section.
+# ver0.15 - 2026-05-06 - Required the comparison image to be a table-style PNG instead of plan cards.
+# ver0.16 - 2026-05-06 - Added checks for mobile developer profile timeline fallback.
+# ver0.17 - 2026-05-08 - Added checks for reference pricing/add-ons/reviews, portrait developer image, emphasized FAQ, and floating launch grip.
+# ver0.18 - 2026-05-08 - Required a local favicon so the published page avoids browser favicon 404s.
+# ver0.19 - 2026-05-08 - Required 3-column add-ons, price-free regenerated add-on images, HTML comparison table, and larger readable reviews.
+# ver0.20 - 2026-05-08 - Required cropped previous-style add-on images and larger comparison marks.
+# ver0.21 - 2026-05-09 - Required duplicate add-on titles and visible footer/version history to be removed.
+# ver0.22 - 2026-05-09 - Required footer support links, updated header trial CTA, and consistent add-on card borders.
+# ver0.23 - 2026-05-09 - Required a stylesheet cache-busting version for the footer and add-on border release.
+# ver0.24 - 2026-05-09 - Required the minimal landing page link to be hidden from the main page header.
+# ver0.25 - 2026-05-09 - Required the floating quick navigation to be removed from the main page.

@@ -1,4 +1,38 @@
-.env
+# Python
 __pycache__/
 .cache/
 outputs/
+
+# Secrets / credentials — never commit these
+.env
+.env.*
+!.env.example
+!.env.sample
+*.env
+
+# Cryptographic keys / certificates
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+
+# Common credential / secret files
+credentials.json
+*-credentials.json
+service-account*.json
+secrets.json
+*.secrets
+api_keys.txt
+keys.txt
+
+# Editor / plugin local config that often holds API keys
+data.json
+*.local.json
+*.secret.json
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

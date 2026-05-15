@@ -71,18 +71,61 @@ source: "元ファイルパス"
 2. YAMLフロントマターの `title` をタイトル欄に入力
 
 ### Step 3.5: アイキャッチ画像（サムネイル）のご案内
-記事トップのサムネイル画像は、ブラウザのセキュリティ制限により **自動アップロード不可**。
-ユーザーに手動アップロードを依頼する。
+
+note.com のアイキャッチ画像は **1280×670 (≒1.91:1, OGP準拠)** が推奨サイズ。3:2 や 4:3 のままアップロードすると記事ページで縦に間延びして見える。
+
+#### Step 3.5-A: サムネ画像の準備
+
+**サムネ画像が未生成、または既存サムネが note 推奨サイズ (1280×670 / 1.91:1) でない場合は、まずサムネを生成または再生成する。**
+
+**生成方針（必須）:**
+- モデル: **`gpt-image-2`**（OpenAI Images API、`buzzblog-generator/data.json` の `openaiImageModel` から読み込み）
+- 生成サイズ: **`1536x1024`**（gpt-image-2 が直接対応する最も横長の比率）
+- 後処理: **Pillow で中央水平帯を 1.91:1 にクロップ → LANCZOS で 1280×670 に縮小**
+- 出力: 既存サムネファイルがあれば **同じパスに上書き**
+
+**プロンプト方針:**
+- 1.91:1 の最終クロップを前提に、**主要テキスト/ロゴはすべて画像の中央 65% の水平帯に収める** ことを明示する（上下端には重要要素を置かない、と書く）
+- 元記事の MD に「サムネ案」セクションがあれば、その配色・コピー指示を踏襲する
+- 「薄い色」「パステル」は使わない（彩度の高い黄色／シアン／マゼンタ等を指定）。日本語テキストは正確に表示するよう明示
+
+**参考実装**: `scripts/blog_assets/gen_follower31_thumbnail_gpt.py`（gpt-image-2 + Pillow クロップ + LANCZOS リサイズの完全な雛形）
+
+```python
+# 生成 → クロップ → リサイズの最小ロジック
+TARGET_W, TARGET_H = 1280, 670
+TARGET_RATIO = TARGET_W / TARGET_H
+
+resp = client.images.generate(model="gpt-image-2", prompt=PROMPT, size="1536x1024", n=1)
+img = Image.open(io.BytesIO(base64.b64decode(resp.data[0].b64_json))).convert("RGB")
+src_w, src_h = img.size
+new_h = int(round(src_w / TARGET_RATIO))
+top = (src_h - new_h) // 2
+img = img.crop((0, top, src_w, top + new_h)).resize((TARGET_W, TARGET_H), Image.LANCZOS)
+img.save(OUTPUT_PATH, format="PNG", optimize=True)
+```
+
+**スクリプトのテンプレ化手順:**
+1. `scripts/blog_assets/gen_follower31_thumbnail_gpt.py` をコピーして `gen_<記事識別子>_thumbnail_gpt.py` を作る
+2. `OUTPUT_PATH` を新記事のサムネパスに差し替え
+3. `PROMPT` を新記事のサムネ案に合わせて書き換え
+4. `uv run python scripts/blog_assets/gen_<記事識別子>_thumbnail_gpt.py` で実行
+
+#### Step 3.5-B: 手動アップロードの依頼
+
+サムネ生成（または再生成）が完了したら、note.com 編集画面のサムネアップロードは **ブラウザのセキュリティ制限により自動化不可** なので、ユーザーに手動アップロードを依頼する。
 
 **必ずユーザーに以下を伝える:**
-1. アップロードするファイルの **フルパス** を表示する
+1. アップロードするファイルの **フルパス** を表示する（生成サイズ・容量も併記すると親切）
 2. 手順: エディタ上部「画像を追加」→「画像をアップロード」→ ファイル選択
+3. 既に旧サムネがアップ済みなら、一旦削除してから新ファイルを選択する旨も伝える
 
 例:
 ```
-サムネイル画像を手動でアップロードしてください:
-パス: C:\Users\mitam\Desktop\work\50_ブログ\02_note\01_XToolsPro3\01_紹介記事\icloud_thumbnail.jpg
+サムネイル画像（1280×670 / note推奨サイズ）を手動でアップロードしてください:
+パス: C:\Users\mitam\Desktop\work\50_ブログ\02_note\01_XToolsPro3\01_紹介記事\icloud_thumbnail.png
 手順: エディタ上部「画像を追加」→「画像をアップロード」→ 上記ファイルを選択
+（既存サムネがある場合は先に削除してから差し替え）
 ```
 
 **理由**: file inputへのローカルファイル自動セットはブラウザセキュリティで不可。ダイアログが開くとMCPが操作不能になる。
@@ -1006,6 +1049,7 @@ document.querySelectorAll('.ProseMirror pre.codeBlock').forEach((pre, i) => {
 
 ## バージョン履歴
 
+- ver 2.12 - 2026/05/09 - Step 3.5 を 3.5-A (サムネ生成) と 3.5-B (手動アップロード) に分割。サムネ生成は **gpt-image-2 で 1536x1024 を生成 → Pillow で 1.91:1 中央クロップ → LANCZOS で 1280×670 に縮小** が必須。参考実装は `scripts/blog_assets/gen_follower31_thumbnail_gpt.py`。プロンプトは「主要要素を中央65%帯に収める」「薄い色は使わない」を明示
 - ver 2.11 - 2026/04/27 - パターン16（コードブロック挿入：一括DOM置換方式）を新設。`<pre class="codeBlock"><code>...</code></pre>` をUUID付きで構築するとProseMirrorが受理する。ツールバー「コード」ボタンはトグル動作で連続処理時に巻き戻し事故が起きるため非推奨。Markdown→blocks変換ルールに `pre` 型を追加、パターン8の switch にも `case 'pre'` を追加。フェンス記法と単独行コマンド段落をコードブロック化する経路を整備
 - ver 2.10 - 2026/04/19 - パターン13に「UL→中黒引用ブロックの一括DOM置換方式」を追加（`figure>blockquote>p(・item<br>...)` をUUID付きで構築すればProseMirrorが受理、UI操作不要で高速）。本プロジェクトでは箇条書きブロックは中黒+引用形式が方針であることを明記
 - ver 2.9 - 2026/04/19 - 既存記事の部分編集パターンを新設。引用ボタンのトグル動作・ProseMirror選択イベント順序（selectionchange必須）・UL中黒変換・新規セクション挿入・既編集チェックの4パターン（12〜15）を追加。禁止事項に「引用ボタン重複クリック」「1JSバッチ引用化」、エラー対処に「スクリーンショット真っ黒」「浮動ツールバー非表示」「引用の消失」を追記
